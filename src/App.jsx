@@ -11,113 +11,202 @@ import {
   AlertCircle,
   Clock,
   Upload,
-  ExternalLink
+  ExternalLink,
+  ChevronDown,
+  Heart,
+  Sun
 } from 'lucide-react';
 
-// --- DATEI IMPORT LOGIK FÜR BUILD-SYSTEME ---
-// In einer echten React-App (Vite/CRA) werden Assets idealerweise importiert.
-// Dieser Block versucht, Importe zu nutzen, hat aber einen Fallback für diese Vorschau-Umgebung.
-
-let assets = {
-  mod: null,
-  art1: null, art2: null, art3: null, art4: null, art5: null, art6: null,
-  logo: null
-};
-
+// --- DATEI IMPORT LOGIK ---
+let importedFiles = {};
 try {
-  // Versuche Standard-Requires (für Webpack/CRA Umgebungen)
-  assets = {
-    mod: require('./Moderation.mp3'),
-    art1: require('./Artikel 1.mp3'),
-    art2: require('./Artikel 2.mp3'),
-    art3: require('./Artikel 3.mp3'),
-    art4: require('./Artikel 4.mp3'),
-    art5: require('./Artikel 5.mp3'),
-    art6: require('./Artikel 6.mp3'),
-    logo: require('./image_2dc4c5.png')
+  importedFiles = {
+    logo: require('./image_2dc4c5.png'),
+    // Morgen Playlist
+    mod_morgen: require('./Moderation.mp3'),
+    art1_morgen: require('./Artikel 1.mp3'),
+    art2_morgen: require('./Artikel 2.mp3'),
+    art3_morgen: require('./Artikel 3.mp3'),
+    art4_morgen: require('./Artikel 4.mp3'),
+    art5_morgen: require('./Artikel 5.mp3'),
+    art6_morgen: require('./Artikel 6.mp3'),
+    // Liebe Playlist (Platzhalter-Dateinamen, müssen im public Ordner liegen)
+    mod_liebe: "Moderation Liebe.mp3", 
+    art1_liebe: "Artikel 1 Liebe.mp3",
+    art2_liebe: "Artikel 2 Liebe.mp3",
+    art3_liebe: "Artikel 3 Liebe.mp3",
+    art4_liebe: "Artikel 4 Liebe.mp3",
+    art5_liebe: "Artikel 5 Liebe.mp3",
+    art6_liebe: "Artikel 6 Liebe.mp3",
+    art7_liebe: "Artikel 7 Liebe.mp3"
   };
 } catch (e) {
-  // Fallback: Nutze Dateinamen als Strings (für Public Folder / GitHub Pages raw access)
-  // Hinweis: Stellen Sie sicher, dass die Dateien im 'public'-Ordner Ihres Projekts liegen.
-  assets = {
-    mod: "Moderation.mp3",
-    art1: "Artikel 1.mp3",
-    art2: "Artikel 2.mp3",
-    art3: "Artikel 3.mp3",
-    art4: "Artikel 4.mp3",
-    art5: "Artikel 5.mp3",
-    art6: "Artikel 6.mp3",
-    logo: "image_2dc4c5.png"
-  };
+  // Fallback für reine String-Pfade
+  importedFiles = { logo: "image_2dc4c5.png" };
 }
 
-const ARTICLES_DATA = [
-  {
-    id: 1,
-    title: "Verhandlungen über Friedenslösung: Hinter den Kulissen warnen die Europäer Selenskyj",
-    authors: "Matthias Gebauer, Paul-Anton Krüger",
-    modStart: 10,
-    modEnd: 27,
-    fileKey: 'art1',
-    fileName: "Artikel 1.mp3",
-    readUrl: "https://www.spiegel.de/politik/deutschland/ukraine-gespraeche-hinter-den-kulissen-warnen-die-europaeer-selenskyj-a-08c9846e-6af5-4c69-b53a-8e802dc7aa77"
+// --- DATEN STRUKTUR ---
+const PLAYLIST_CONTENT = {
+  morgen: {
+    id: 'morgen',
+    label: "Playlist am Morgen",
+    icon: Sun,
+    modFile: "Moderation.mp3",
+    modKey: "mod_morgen",
+    modTitle: "Die Lage am Morgen: Das Briefing",
+    modAuthors: "Die wichtigsten Themen des Tages im Überblick.",
+    articles: [
+      {
+        id: 1,
+        title: "Verhandlungen über Friedenslösung: Hinter den Kulissen warnen die Europäer Selenskyj",
+        authors: "Matthias Gebauer, Paul-Anton Krüger",
+        modStart: 10,
+        modEnd: 27,
+        fileName: "Artikel 1.mp3",
+        fileKey: "art1_morgen",
+        readUrl: "https://www.spiegel.de/politik/deutschland/ukraine-gespraeche-hinter-den-kulissen-warnen-die-europaeer-selenskyj-a-08c9846e-6af5-4c69-b53a-8e802dc7aa77"
+      },
+      {
+        id: 2,
+        title: "Angeblicher Angriff auf Putins Residenz: Die drei großen Ungereimtheiten",
+        authors: "Ann-Dorit Boy",
+        modStart: 28,
+        modEnd: 45,
+        fileName: "Artikel 2.mp3",
+        fileKey: "art2_morgen",
+        readUrl: "https://www.spiegel.de/ausland/wladimir-putin-angeblicher-angriff-auf-residenz-zweifel-an-russischen-vorwuerfen-91-angeblich-abgewehrte-drohnen-und-viele-ungereimtheiten-a-456e4e4f-9dc5-4e22-ad75-a82d8e4b1934"
+      },
+      {
+        id: 3,
+        title: "US-Sanktionen gegen Deutsche: »Diese Regierung ist zu allem fähig«",
+        authors: "Wolf Wiedmann-Schmidt",
+        modStart: 46,
+        modEnd: 60,
+        fileName: "Artikel 3.mp3",
+        fileKey: "art3_morgen",
+        readUrl: "https://www.spiegel.de/politik/deutschland/sanktionen-gegen-hate-aid-weitere-us-massnahmen-gegen-deutsche-befuerchtet-a-e0c8b6d9-95e2-4e76-8360-4ea9e3e1dc3d"
+      },
+      {
+        id: 4,
+        title: "Preissprünge 2025: Butter, Kaffee, Kakao",
+        authors: "Michael Kröger",
+        modStart: 61,
+        modEnd: 77,
+        fileName: "Artikel 4.mp3",
+        fileKey: "art4_morgen",
+        readUrl: "https://www.manager-magazin.de/unternehmen/handel/inflation-das-waren-die-groessten-preisspruenge-bei-lebensmitteln-2025-1767088287-a-69823e02-dac4-476e-bfec-c8e695bb6e86"
+      },
+      {
+        id: 5,
+        title: "Alkoholfolgen: Das hilft Ihnen gegen den Kater",
+        authors: "Simon Maurer",
+        modStart: 79,
+        modEnd: 106,
+        fileName: "Artikel 5.mp3",
+        fileKey: "art5_morgen",
+        readUrl: "https://www.spiegel.de/gesundheit/alkohol-das-taugen-die-neuen-anti-kater-mittel-aus-asien-a-0ef45fa2-4fb7-4710-b0d3-3f6f07a4d741"
+      },
+      {
+        id: 6,
+        title: "FITNESS: Wie Ihre Muskeln die richtige Balance finden",
+        authors: "Anne Paulsen",
+        modStart: 107,
+        modEnd: 133,
+        fileName: "Artikel 6.mp3",
+        fileKey: "art6_morgen",
+        readUrl: "https://www.spiegel.de/fitness/balance-beim-muskeltraining-uebungen-fuer-laeufer-radsportler-und-fussballer-a-793e40f3-e682-4fec-b8b1-02bdba58cf43"
+      }
+    ]
   },
-  {
-    id: 2,
-    title: "Angeblicher Angriff auf Putins Residenz: Die drei großen Ungereimtheiten",
-    authors: "Ann-Dorit Boy",
-    modStart: 28,
-    modEnd: 45,
-    fileKey: 'art2',
-    fileName: "Artikel 2.mp3",
-    readUrl: "https://www.spiegel.de/ausland/wladimir-putin-angeblicher-angriff-auf-residenz-zweifel-an-russischen-vorwuerfen-91-angeblich-abgewehrte-drohnen-und-viele-ungereimtheiten-a-456e4e4f-9dc5-4e22-ad75-a82d8e4b1934"
-  },
-  {
-    id: 3,
-    title: "US-Sanktionen gegen Deutsche: »Diese Regierung ist zu allem fähig«",
-    authors: "Wolf Wiedmann-Schmidt",
-    modStart: 46,
-    modEnd: 60,
-    fileKey: 'art3',
-    fileName: "Artikel 3.mp3",
-    readUrl: "https://www.spiegel.de/politik/deutschland/sanktionen-gegen-hate-aid-weitere-us-massnahmen-gegen-deutsche-befuerchtet-a-e0c8b6d9-95e2-4e76-8360-4ea9e3e1dc3d"
-  },
-  {
-    id: 4,
-    title: "Preissprünge 2025: Butter, Kaffee, Kakao",
-    authors: "Michael Kröger",
-    modStart: 61,
-    modEnd: 77,
-    fileKey: 'art4',
-    fileName: "Artikel 4.mp3",
-    readUrl: "https://www.manager-magazin.de/unternehmen/handel/inflation-das-waren-die-groessten-preisspruenge-bei-lebensmitteln-2025-1767088287-a-69823e02-dac4-476e-bfec-c8e695bb6e86"
-  },
-  {
-    id: 5,
-    title: "Alkoholfolgen: Das hilft Ihnen gegen den Kater",
-    authors: "Simon Maurer",
-    modStart: 79,
-    modEnd: 106,
-    fileKey: 'art5',
-    fileName: "Artikel 5.mp3",
-    readUrl: "https://www.spiegel.de/gesundheit/alkohol-das-taugen-die-neuen-anti-kater-mittel-aus-asien-a-0ef45fa2-4fb7-4710-b0d3-3f6f07a4d741"
-  },
-  {
-    id: 6,
-    title: "FITNESS: Wie Ihre Muskeln die richtige Balance finden",
-    authors: "Anne Paulsen",
-    modStart: 107,
-    modEnd: 133,
-    fileKey: 'art6',
-    fileName: "Artikel 6.mp3",
-    readUrl: "https://www.spiegel.de/fitness/balance-beim-muskeltraining-uebungen-fuer-laeufer-radsportler-und-fussballer-a-793e40f3-e682-4fec-b8b1-02bdba58cf43"
+  liebe: {
+    id: 'liebe',
+    label: "Playlist der Liebe",
+    icon: Heart,
+    modFile: "Moderation Liebe.mp3",
+    modKey: "mod_liebe",
+    modTitle: "SPIEGEL Loveletter",
+    modAuthors: "Psychologie & Partnerschaft – Die wichtigsten Erkenntnisse.",
+    articles: [
+      {
+        id: 1,
+        title: "Wie Sie erkennen, was Ihr Partner oder Ihre Partnerin wirklich mag",
+        authors: "Sonja Bröning",
+        modStart: 22,
+        modEnd: 40,
+        fileName: "Artikel 1 Liebe.mp3",
+        fileKey: "art1_liebe",
+        readUrl: "https://www.spiegel.de/psychologie/fuenf-sprachen-der-liebe-wie-sie-erkennen-was-ihr-partner-oder-ihre-partnerin-wirklich-mag-a-5c2f582b-6ca0-4e3a-96e0-24a35041f644"
+      },
+      {
+        id: 2,
+        title: "Ich koche für Tina. Das ist meine Art, zu sagen: Ich liebe dich",
+        authors: "Viktor Szukitsch",
+        modStart: 41,
+        modEnd: 56,
+        fileName: "Artikel 2 Liebe.mp3",
+        fileKey: "art2_liebe",
+        readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-ich-koche-fuer-tina-das-ist-meine-art-zu-sagen-ich-liebe-dich-a-733f3809-54d9-4b62-b91c-1481e1933e45"
+      },
+      {
+        id: 3,
+        title: "Über diese Themen sollten Sie sprechen, bevor Sie sich verlieben",
+        authors: "Eva Wlodarek",
+        modStart: 57,
+        modEnd: 75,
+        fileName: "Artikel 3 Liebe.mp3",
+        fileKey: "art3_liebe",
+        readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-ueber-diese-themen-sollten-sie-sprechen-bevor-sie-sich-verlieben-a-f3265886-0929-4e12-8d77-62f97486e96f"
+      },
+      {
+        id: 4,
+        title: "Gleichberechtigung: Diese beiden haben geschafft, wovon andere träumen",
+        authors: "Krishna Pandit und Shruthi Hangal",
+        modStart: 76,
+        modEnd: 94, // 1:16 - 1:34 (Korrektur: keine Überlappung)
+        fileName: "Artikel 4 Liebe.mp3",
+        fileKey: "art4_liebe",
+        readUrl: "https://www.spiegel.de/psychologie/gleichberechtigung-in-der-partnerschaft-diese-beiden-haben-geschafft-wvovon-andere-traeumen-a-76d499ed-be02-4029-9e80-8733230a108a"
+      },
+      {
+        id: 5,
+        title: "Am tiefsten Punkt unserer Beziehung heilte uns der Nackturlaub",
+        authors: "Hanna Zobel",
+        modStart: 95,
+        modEnd: 112, // 1:35 - 1:52
+        fileName: "Artikel 5 Liebe.mp3",
+        fileKey: "art5_liebe",
+        readUrl: "https://www.spiegel.de/psychologie/beziehungskrise-am-tiefsten-punkt-unserer-beziehung-heilte-uns-der-nackturlaub-a-6943b17c-2191-4993-80f4-5f1655be23c4"
+      },
+      {
+        id: 6,
+        title: "So bewahren Sie den Spaß in Ihrer Beziehung",
+        authors: "Anne Ahnis",
+        modStart: 113,
+        modEnd: 129, // 1:53 - 2:09
+        fileName: "Artikel 6 Liebe.mp3",
+        fileKey: "art6_liebe",
+        readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-so-bewahren-sie-den-spass-in-ihrer-beziehung-a-096895e6-ec18-466d-9be2-49da43292419"
+      },
+      {
+        id: 7,
+        title: "Benjamin Maack über das späte Glück",
+        authors: "Benjamin Maack",
+        modStart: 130,
+        modEnd: 146, // 2:10 - 2:26
+        fileName: "Artikel 7 Liebe.mp3",
+        fileKey: "art7_liebe",
+        readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-benjamin-maack-ueber-das-spaete-glueck-a-2007823b-3195-48b4-938b-d54d24a9194e"
+      }
+    ]
   }
-];
+};
 
 const App = () => {
+  const [activePlaylist, setActivePlaylist] = useState('morgen'); // 'morgen' oder 'liebe'
   const [activeMode, setActiveMode] = useState('moderation'); 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentArticleIdx, setCurrentArticleIdx] = useState(0);
+  const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   
   // Audio State
   const [modTime, setModTime] = useState(0);
@@ -133,27 +222,41 @@ const App = () => {
   const modAudioRef = useRef(null);
   const artAudioRef = useRef(null);
 
-  // Verbesserte Source-Ermittlung: User-Datei > Import > Fallback-Pfad
+  const currentData = PLAYLIST_CONTENT[activePlaylist];
+
   const getSrc = (key, defaultName) => {
-    // 1. Priorität: Manuell vom Nutzer ausgewählte Datei (File Picker)
     if (userFiles[defaultName]) return userFiles[defaultName];
-    
-    // 2. Priorität: Importiertes Modul (Vite/Webpack Build)
-    const imported = assets[key];
+    // Fallback: Check if we have an imported asset, otherwise use defaultName string
+    const imported = importedFiles[key];
     if (imported && typeof imported === 'object' && imported.default) {
-      return imported.default; // ES Module Default Export
+      return imported.default; 
     }
     if (imported && typeof imported === 'string' && imported.length > 0) {
-      return imported; // String Pfad (Public Folder oder Require result)
+      return imported;
     }
-
-    // 3. Fallback: Relativer Pfad
     return defaultName;
   };
 
   const activeMarkerIdx = useMemo(() => {
-    return ARTICLES_DATA.findIndex(a => modTime >= a.modStart && modTime <= a.modEnd);
-  }, [modTime]);
+    return currentData.articles.findIndex(a => modTime >= a.modStart && modTime <= a.modEnd);
+  }, [modTime, currentData]);
+
+  // Reset Player when switching Playlists
+  useEffect(() => {
+    setIsPlaying(false);
+    setCurrentArticleIdx(0);
+    setActiveMode('moderation');
+    setModTime(0);
+    setArtTime(0);
+    if (modAudioRef.current) {
+        modAudioRef.current.currentTime = 0;
+        modAudioRef.current.load();
+    }
+    if (artAudioRef.current) {
+        artAudioRef.current.currentTime = 0;
+        artAudioRef.current.load();
+    }
+  }, [activePlaylist]);
 
   useEffect(() => {
     const handlePlayback = async () => {
@@ -182,7 +285,7 @@ const App = () => {
       }
     };
     handlePlayback();
-  }, [isPlaying, activeMode, currentArticleIdx, userFiles]);
+  }, [isPlaying, activeMode, currentArticleIdx, userFiles, activePlaylist]);
 
   const togglePlay = () => setIsPlaying(!isPlaying);
 
@@ -204,21 +307,21 @@ const App = () => {
   const backToOverview = () => {
     setActiveMode('moderation');
     const nextIdx = currentArticleIdx + 1;
-    if (nextIdx < ARTICLES_DATA.length && modAudioRef.current) {
-      modAudioRef.current.currentTime = ARTICLES_DATA[nextIdx].modStart;
+    if (nextIdx < currentData.articles.length && modAudioRef.current) {
+      modAudioRef.current.currentTime = currentData.articles[nextIdx].modStart;
     }
     setIsPlaying(true);
   };
 
   const handleSkip = () => {
     if (activeMode === 'moderation') {
-      const nextArticle = ARTICLES_DATA.find(a => a.modStart > modTime + 1);
+      const nextArticle = currentData.articles.find(a => a.modStart > modTime + 1);
       if (nextArticle && modAudioRef.current) {
         modAudioRef.current.currentTime = nextArticle.modStart;
         setIsPlaying(true);
       }
     } else {
-      if (currentArticleIdx < ARTICLES_DATA.length - 1) {
+      if (currentArticleIdx < currentData.articles.length - 1) {
         setCurrentArticleIdx(prev => prev + 1);
         setIsPlaying(true);
       }
@@ -232,9 +335,7 @@ const App = () => {
 
   const handleAudioError = (e, fileName) => {
     const err = e.currentTarget.error;
-    // Wenn Fehlercode 4 (SRC not supported) auftritt, liegt es meist an fehlenden Pfaden
     if (err && err.code === 4) {
-      // Wir prüfen erst, ob wir nicht schon eine User-Datei haben, die vielleicht defekt ist
       if (!userFiles[fileName]) {
         setNeedsFileLink(true);
         setError(`Audio-Datei nicht gefunden.`);
@@ -255,7 +356,6 @@ const App = () => {
     setIsPlaying(false); 
   };
 
-  // Determine current number to display
   let displayIndex = null;
   if (activeMode === 'article') {
     displayIndex = currentArticleIdx + 1;
@@ -270,7 +370,7 @@ const App = () => {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-             {/* Logo Handling */}
+             {/* Logo */}
              <img 
                src={getSrc('logo', 'image_2dc4c5.png')} 
                alt="SPIEGEL" 
@@ -283,23 +383,37 @@ const App = () => {
              <span className="hidden text-red-600 font-black text-2xl tracking-tighter">SPIEGEL</span>
              <span className="hidden md:inline text-slate-400 font-light border-l border-slate-300 pl-4 text-sm tracking-wide uppercase">Audio</span>
           </div>
-          <div className="flex gap-6 text-sm font-bold tracking-wide">
+          
+          <div className="relative">
              <button 
-                onClick={() => setActiveMode('moderation')}
-                className={`relative h-16 flex items-center gap-2 transition-colors ${activeMode === 'moderation' ? 'text-red-600' : 'text-slate-500 hover:text-slate-900'}`}
-             >
-                <Mic2 size={18} />
-                <span>BRIEFING</span>
-                {activeMode === 'moderation' && <div className="absolute bottom-0 left-0 w-full h-1 bg-red-600"></div>}
-             </button>
-             <button 
-                onClick={() => setActiveMode('article')}
-                className={`relative h-16 flex items-center gap-2 transition-colors ${activeMode === 'article' ? 'text-red-600' : 'text-slate-500 hover:text-slate-900'}`}
+                onClick={() => setShowPlaylistMenu(!showPlaylistMenu)}
+                className="flex items-center gap-2 text-slate-900 font-bold text-sm tracking-wide hover:text-red-600 transition-colors h-16"
              >
                 <List size={18} />
-                <span>PLAYLIST</span>
-                {activeMode === 'article' && <div className="absolute bottom-0 left-0 w-full h-1 bg-red-600"></div>}
+                <span>PLAYLISTS</span>
+                <ChevronDown size={14} className={`transition-transform duration-300 ${showPlaylistMenu ? 'rotate-180' : ''}`} />
              </button>
+
+             {/* Playlist Dropdown */}
+             {showPlaylistMenu && (
+               <div className="absolute right-0 top-full mt-0 w-64 bg-white shadow-xl border border-slate-200 rounded-b-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                 <div className="py-2">
+                   {Object.values(PLAYLIST_CONTENT).map(pl => (
+                     <button
+                       key={pl.id}
+                       onClick={() => {
+                         setActivePlaylist(pl.id);
+                         setShowPlaylistMenu(false);
+                       }}
+                       className={`w-full text-left px-5 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors ${activePlaylist === pl.id ? 'text-red-600 font-bold bg-red-50/50' : 'text-slate-700'}`}
+                     >
+                       <pl.icon size={18} />
+                       {pl.label}
+                     </button>
+                   ))}
+                 </div>
+               </div>
+             )}
           </div>
         </div>
       </nav>
@@ -312,38 +426,35 @@ const App = () => {
             <div className="flex items-start gap-4">
               <AlertCircle className="text-orange-600 shrink-0 mt-1" size={24} />
               <div className="space-y-3 flex-1">
-                <h3 className="text-slate-900 font-bold text-lg font-serif">Dateizugriff erforderlich (Lokaler Modus)</h3>
+                <h3 className="text-slate-900 font-bold text-lg font-serif">Dateizugriff erforderlich</h3>
                 <p className="text-slate-700 text-sm leading-relaxed max-w-2xl">
-                  Wenn Sie diese App lokal ohne Webserver testen, blockiert der Browser oft Audio-Dateien. 
-                  Für die GitHub Pages Version ist dies nicht nötig, sofern die Dateien im 'public' Ordner liegen.
-                  Hier können Sie die Dateien manuell verknüpfen:
+                  Bitte stellen Sie sicher, dass alle Audio-Dateien (auch für die neue Playlist) verfügbar sind.
                 </p>
                 <label className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 text-sm font-bold hover:bg-slate-700 transition-colors cursor-pointer">
                   <Upload size={16} />
                   <span>Dateien verknüpfen</span>
-                  <input type="file" multiple accept="audio/*,image/*" onChange={handleFileSelect} className="hidden" />
+                  <input type="file" multiple accept="audio/*" onChange={handleFileSelect} className="hidden" />
                 </label>
               </div>
             </div>
           </div>
         )}
 
-        {/* Main Content Area */}
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* LEFT COLUMN: The "Active" Experience */}
+          {/* LEFT: Active Player */}
           <div className="lg:col-span-7 space-y-8">
             
-            {/* Dynamic Header */}
+            {/* Header */}
             <div>
                <div className="flex items-center gap-3 mb-4">
-                 <span className="inline-block bg-red-600 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest">
-                   {activeMode === 'moderation' ? 'Briefing' : 'Playlist'}
+                 <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest">
+                   <List size={10} />
+                   {currentData.label}
                  </span>
                </div>
                
                <div className="flex gap-4 items-start">
-                  {/* Dynamic Number Display */}
                   {displayIndex ? (
                     <div className="shrink-0 w-12 h-12 flex items-center justify-center border-2 border-slate-900 rounded-full text-slate-900 font-serif font-bold text-2xl mt-1">
                       {displayIndex}
@@ -357,24 +468,24 @@ const App = () => {
                   <div>
                     <h1 className="text-3xl md:text-4xl font-serif font-bold leading-tight text-slate-900">
                       {activeMode === 'moderation' 
-                          ? (activeMarkerIdx !== -1 ? ARTICLES_DATA[activeMarkerIdx].title : "Die Lage am Morgen: Das Briefing")
-                          : ARTICLES_DATA[currentArticleIdx].title
+                          ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].title : currentData.modTitle)
+                          : currentData.articles[currentArticleIdx].title
                       }
                     </h1>
                     <p className="text-slate-600 text-lg mt-3 font-serif italic pl-1">
                       {activeMode === 'moderation' 
-                        ? (activeMarkerIdx !== -1 ? ARTICLES_DATA[activeMarkerIdx].authors : "Die wichtigsten Themen des Tages im Überblick.")
-                        : ARTICLES_DATA[currentArticleIdx].authors
+                        ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].authors : currentData.modAuthors)
+                        : currentData.articles[currentArticleIdx].authors
                       }
                     </p>
                   </div>
                </div>
             </div>
 
-            {/* THE PLAYER MODULE */}
+            {/* Player Module */}
             <div className="bg-white border border-slate-200 shadow-sm p-8 relative">
                
-               {/* Timeline Visualization */}
+               {/* Timeline */}
                <div className="mb-10">
                   <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
                      <span>{formatTime(activeMode === 'moderation' ? modTime : artTime)}</span>
@@ -382,26 +493,20 @@ const App = () => {
                   </div>
                   
                   <div className="relative h-12 flex items-center cursor-pointer">
-                     {/* Base Track */}
                      <div className="absolute w-full h-1 bg-slate-200"></div>
-
-                     {/* Progress */}
                      <div 
                         className="absolute h-1 bg-red-600 z-10 transition-all duration-300"
                         style={{ width: `${((activeMode === 'moderation' ? modTime : artTime) / (activeMode === 'moderation' ? (modDuration || 1) : (artDuration || 1))) * 100}%` }}
                      >
-                        {/* Playhead */}
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-red-600 rounded-full shadow-md"></div>
                      </div>
 
-                     {/* Context Markers (Only in Moderation Mode) */}
-                     {activeMode === 'moderation' && modDuration > 0 && ARTICLES_DATA.map((a) => (
+                     {activeMode === 'moderation' && modDuration > 0 && currentData.articles.map((a) => (
                        <div 
                          key={a.id}
                          className={`absolute h-4 w-1 top-1/2 -translate-y-1/2 z-20 transition-all duration-500 group/marker ${modTime >= a.modStart && modTime <= a.modEnd ? 'bg-red-600 h-6 w-1.5' : 'bg-slate-300 hover:bg-slate-400'}`}
                          style={{ left: `${(a.modStart / modDuration) * 100}%` }}
                        >
-                         {/* Hover Tooltip */}
                          <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 hidden group-hover/marker:block bg-slate-900 text-white text-[10px] px-2 py-1 whitespace-nowrap z-50 rounded shadow-lg">
                            <span className="font-bold text-red-400 mr-1">{a.id}.</span>
                            {a.title.substring(0, 20)}...
@@ -410,7 +515,6 @@ const App = () => {
                        </div>
                      ))}
                      
-                     {/* Scrubbing Input */}
                      <input 
                        type="range"
                        min="0"
@@ -447,7 +551,6 @@ const App = () => {
                      </button>
                   </div>
 
-                  {/* Context Action Button Stack */}
                   <div className="flex-1 flex flex-col items-end gap-2">
                      {activeMode === 'moderation' && activeMarkerIdx !== -1 && (
                         <>
@@ -459,9 +562,9 @@ const App = () => {
                               <ArrowRight size={18} />
                            </button>
                            
-                           {ARTICLES_DATA[activeMarkerIdx].readUrl && (
+                           {currentData.articles[activeMarkerIdx].readUrl && (
                               <a 
-                                 href={ARTICLES_DATA[activeMarkerIdx].readUrl} 
+                                 href={currentData.articles[activeMarkerIdx].readUrl} 
                                  target="_blank" 
                                  rel="noopener noreferrer"
                                  className="flex items-center gap-2 text-slate-500 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
@@ -483,9 +586,9 @@ const App = () => {
                               <span>Zur Übersicht</span>
                            </button>
 
-                           {ARTICLES_DATA[currentArticleIdx].readUrl && (
+                           {currentData.articles[currentArticleIdx].readUrl && (
                               <a 
-                                 href={ARTICLES_DATA[currentArticleIdx].readUrl} 
+                                 href={currentData.articles[currentArticleIdx].readUrl} 
                                  target="_blank" 
                                  rel="noopener noreferrer"
                                  className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
@@ -503,26 +606,26 @@ const App = () => {
             {/* Info Box */}
             <div className="bg-slate-100 p-6 text-sm text-slate-600 leading-relaxed font-serif">
               <span className="font-bold text-slate-900 block mb-2 font-sans text-xs uppercase tracking-widest">Hinweis zur Nutzung</span>
-              Sie befinden sich im {activeMode === 'moderation' ? 'Briefing-Modus' : 'Playlist-Modus'}. 
+              Sie befinden sich im {activeMode === 'moderation' ? 'Playlist-Modus' : 'Artikel-Modus'}. 
               {activeMode === 'moderation' 
-                 ? " Hier erhalten Sie eine kuratierte Zusammenfassung. Bei Interesse an einem Thema können Sie jederzeit in die Tiefe gehen."
-                 : " Hier hören Sie die vollständige Reportage. Über 'Zurück' gelangen Sie nahtlos an Ihre letzte Stelle im Briefing."
+                 ? " Die Moderation führt Sie durch die Playlist. Bei Interesse an einem Thema können Sie jederzeit in die Tiefe gehen."
+                 : " Hier hören Sie den vollständigen Beitrag. Über 'Zurück' gelangen Sie nahtlos an Ihre letzte Stelle in der Playlist."
               }
             </div>
           </div>
 
-          {/* RIGHT COLUMN: The List / Context */}
+          {/* RIGHT: List */}
           <div className="lg:col-span-5 bg-white border border-slate-200 shadow-sm">
             <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                <h3 className="font-bold text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2">
                  <List size={16} className="text-red-600" />
-                 Inhalt der Sendung
+                 Inhalt der Playlist
                </h3>
-               <span className="text-xs font-mono text-slate-400">{ARTICLES_DATA.length} Beiträge</span>
+               <span className="text-xs font-mono text-slate-400">{currentData.articles.length} Beiträge</span>
             </div>
             
             <div className="divide-y divide-slate-100">
-               {ARTICLES_DATA.map((article, idx) => {
+               {currentData.articles.map((article, idx) => {
                  const isPlayingThis = activeMode === 'article' && currentArticleIdx === idx;
                  const isModerationFocus = activeMode === 'moderation' && activeMarkerIdx === idx;
                  
@@ -538,7 +641,6 @@ const App = () => {
                        isPlayingThis ? 'bg-slate-50' : ''
                      } ${isModerationFocus ? 'bg-red-50/30' : ''}`}
                    >
-                     {/* Number / State Indicator */}
                      <div className="shrink-0 pt-1">
                         {isPlayingThis ? (
                            <div className="w-6 h-6 flex items-center justify-center">
@@ -574,29 +676,28 @@ const App = () => {
 
         </main>
 
-        {/* Audio Core (Hidden) */}
         <div className="hidden">
           <audio 
             ref={modAudioRef}
-            src={getSrc('mod', "Moderation.mp3")}
+            src={getSrc(currentData.modKey, currentData.modFile)}
             onLoadedMetadata={(e) => setModDuration(e.target.duration)}
             onTimeUpdate={(e) => setModTime(e.target.currentTime)}
             onEnded={() => setIsPlaying(false)}
-            onError={(e) => handleAudioError(e, "Moderation.mp3")}
+            onError={(e) => handleAudioError(e, currentData.modFile)}
           />
           <audio 
             ref={artAudioRef}
-            src={getSrc(ARTICLES_DATA[currentArticleIdx].fileKey, ARTICLES_DATA[currentArticleIdx].fileName)}
+            src={getSrc(currentData.articles[currentArticleIdx].fileKey, currentData.articles[currentArticleIdx].fileName)}
             onLoadedMetadata={(e) => setArtDuration(e.target.duration)}
             onTimeUpdate={(e) => setArtTime(e.target.currentTime)}
             onEnded={() => {
-              if (currentArticleIdx < ARTICLES_DATA.length - 1) {
+              if (currentArticleIdx < currentData.articles.length - 1) {
                 setCurrentArticleIdx(prev => prev + 1);
               } else {
                 setIsPlaying(false);
               }
             }}
-            onError={(e) => handleAudioError(e, ARTICLES_DATA[currentArticleIdx].fileName)}
+            onError={(e) => handleAudioError(e, currentData.articles[currentArticleIdx].fileName)}
           />
         </div>
 
