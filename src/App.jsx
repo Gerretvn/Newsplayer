@@ -17,7 +17,8 @@ import {
   Sun,
   ChevronLeft,
   ChevronRight,
-  Lock
+  Lock,
+  ChevronUp
 } from 'lucide-react';
 
 // --- DATEI IMPORT LOGIK ---
@@ -25,7 +26,7 @@ let importedFiles = {};
 try {
   importedFiles = {
     logo: require('./image_2dc4c5.png'),
-    // Morgen Playlist Audio (Import-Versuch)
+    // Morgen Playlist Audio
     mod_morgen: require('./Moderation.mp3'),
     art1_morgen: require('./Artikel 1.mp3'),
     art2_morgen: require('./Artikel 2.mp3'),
@@ -33,7 +34,7 @@ try {
     art4_morgen: require('./Artikel 4.mp3'),
     art5_morgen: require('./Artikel 5.mp3'),
     art6_morgen: require('./Artikel 6.mp3'),
-    // Bilder (Import-Versuch)
+    // Bilder
     img1_morgen: require('./Bild Artikel 1.webp'),
     img2_morgen: require('./Bild Artikel 2.webp'),
     img3_morgen: require('./Bild Artikel 3.webp'),
@@ -244,7 +245,6 @@ const App = () => {
 
   const getSrc = (key, defaultName) => {
     if (userFiles[defaultName]) return userFiles[defaultName];
-    // Fallback: Prüfe importierten Key, sonst nutze den Dateinamen (für Public Folder)
     const imported = importedFiles[key];
     if (imported && typeof imported === 'object' && imported.default) {
       return imported.default; 
@@ -262,7 +262,6 @@ const App = () => {
   // Handle Login
   const handleLogin = (e) => {
     e.preventDefault();
-    // Einfacher Passwort-Check (case-insensitive)
     if (passwordInput.toLowerCase().trim() === 'spiegel') {
       setIsAuthenticated(true);
       setLoginError(false);
@@ -290,7 +289,7 @@ const App = () => {
 
   useEffect(() => {
     const handlePlayback = async () => {
-      if (!isAuthenticated) return; // Kein Playback vor Login
+      if (!isAuthenticated) return;
 
       try {
         const activeRef = activeMode === 'moderation' ? modAudioRef.current : artAudioRef.current;
@@ -338,15 +337,21 @@ const App = () => {
 
   const backToOverview = () => {
     setActiveMode('moderation');
-    const nextIdx = currentArticleIdx + 1;
-    if (nextIdx < currentData.articles.length && modAudioRef.current) {
-      modAudioRef.current.currentTime = currentData.articles[nextIdx].modStart;
+    // Intelligent back: Jump to START of the current marker in moderation if we are deep in article,
+    // or just play from where we left off?
+    // User requested: "Zur Übersicht steht dann an derselben Stelle mit Pfeil nach links"
+    // and "analog wieder zum überblick zurück mit einem Pfeil oben mittig im Bild"
+    
+    // Logic: If we switch back to moderation, ensure we are at the marker corresponding to the article we just heard
+    if (modAudioRef.current) {
+        modAudioRef.current.currentTime = currentData.articles[currentArticleIdx].modStart;
     }
     setIsPlaying(true);
   };
 
-  const handleSkip = () => {
+  const handleNext = () => {
     if (activeMode === 'moderation') {
+      // Find next marker that starts after current time
       const nextArticle = currentData.articles.find(a => a.modStart > modTime + 1);
       if (nextArticle && modAudioRef.current) {
         modAudioRef.current.currentTime = nextArticle.modStart;
@@ -360,9 +365,26 @@ const App = () => {
     }
   };
 
-  const handleRewind = () => {
-     const ref = activeMode === 'moderation' ? modAudioRef : artAudioRef;
-     if(ref.current) ref.current.currentTime -= 10;
+  const handlePrev = () => {
+     if (activeMode === 'moderation') {
+       // Find previous marker
+       const tolerance = 2; // seconds buffer
+       // reverse copy to find the latest marker that is before current time
+       const prevArticle = [...currentData.articles].reverse().find(a => a.modStart < modTime - tolerance);
+       
+       if (prevArticle && modAudioRef.current) {
+         modAudioRef.current.currentTime = prevArticle.modStart;
+         setIsPlaying(true);
+       } else if (modAudioRef.current) {
+         // If no previous marker found, go to start
+         modAudioRef.current.currentTime = 0;
+       }
+     } else {
+        if (currentArticleIdx > 0) {
+            setCurrentArticleIdx(prev => prev - 1);
+            setIsPlaying(true);
+        }
+     }
   };
 
   const handleAudioError = (e, fileName) => {
@@ -391,31 +413,46 @@ const App = () => {
   // Swipe handling
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [touchStartY, setTouchStartY] = useState(null);
+  const [touchEndY, setTouchEndY] = useState(null);
+  
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
+    setTouchEndY(null);
+    setTouchStartY(e.targetTouches[0].clientY);
   }
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+    setTouchEndY(e.targetTouches[0].clientY);
+  }
+  
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    const distanceX = touchStart - touchEnd;
+    const distanceY = touchStartY - touchEndY;
+    const isLeftSwipe = distanceX > minSwipeDistance;
+    const isRightSwipe = distanceX < -minSwipeDistance;
+    const isUpSwipe = distanceY > minSwipeDistance;
+    const isDownSwipe = distanceY < -minSwipeDistance;
 
-    if (isLeftSwipe) {
-      if (currentArticleIdx < currentData.articles.length - 1) {
-        setCurrentArticleIdx(prev => prev + 1);
-        setActiveMode('article');
-        setIsPlaying(true);
-      }
-    } else if (isRightSwipe) {
-      if (currentArticleIdx > 0) {
-        setCurrentArticleIdx(prev => prev - 1);
-        setActiveMode('article');
-        setIsPlaying(true);
-      }
+    // Prioritize horizontal swipe if dominance is clear
+    if (Math.abs(distanceX) > Math.abs(distanceY)) {
+        if (isLeftSwipe) {
+            handleNext();
+        } else if (isRightSwipe) {
+            handlePrev();
+        }
+    } else {
+        // Vertical Swipe Logic
+        if (isDownSwipe && activeMode === 'moderation' && activeMarkerIdx !== -1) {
+            jumpToArticle();
+        } else if (isUpSwipe && activeMode === 'article') {
+            backToOverview();
+        }
     }
   }
 
@@ -541,7 +578,6 @@ const App = () => {
         </div>
       </nav>
 
-      {/* ... Rest der App (wie zuvor) ... */}
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
         
         {/* Fallback File Linker */}
@@ -596,39 +632,60 @@ const App = () => {
                          alt={currentArticleForImage.title}
                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                        />
+                       
                        {/* Overlay with Number */}
-                       <div className="absolute top-4 left-4 flex items-center justify-center w-12 h-12 border-2 border-white rounded-full text-white font-serif font-bold text-2xl bg-black/30 backdrop-blur-sm">
+                       <div className="absolute top-4 left-4 flex items-center justify-center w-12 h-12 border-2 border-white rounded-full text-white font-serif font-bold text-2xl bg-black/30 backdrop-blur-sm z-10">
                          {displayIndex}
                        </div>
+
+                       {/* Vertical Navigation Buttons in Overlay */}
+                       {/* Dive Down Button (Moderation only) */}
+                       {activeMode === 'moderation' && (
+                         <div 
+                            className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                jumpToArticle();
+                            }}
+                         >
+                            <div className="bg-black/50 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm animate-bounce">
+                                <ChevronDown size={28} />
+                            </div>
+                         </div>
+                       )}
+
+                       {/* Back Up Button (Article only) */}
+                       {activeMode === 'article' && (
+                         <div 
+                            className="absolute top-4 right-1/2 translate-x-1/2 z-20"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                backToOverview();
+                            }}
+                         >
+                            <div className="bg-black/50 hover:bg-slate-700 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm">
+                                <ChevronUp size={28} />
+                            </div>
+                         </div>
+                       )}
                      </a>
 
-                     {/* Desktop Navigation Arrows */}
-                     <div className="hidden md:block absolute top-1/2 left-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                     {/* Left/Right Navigation Arrows (Desktop) */}
+                     <div className="hidden md:block absolute top-1/2 left-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                        <button 
-                         onClick={() => {
-                           if (currentArticleIdx > 0) {
-                             setCurrentArticleIdx(prev => prev - 1);
-                             setActiveMode('article');
-                             setIsPlaying(true);
-                           }
-                         }}
-                         disabled={currentArticleIdx === 0}
-                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors ${currentArticleIdx === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                         onClick={handlePrev}
+                         disabled={activeMode === 'moderation' && modTime < 5 && activeMarkerIdx <= 0}
+                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}
                        >
                          <ChevronLeft size={24} />
                        </button>
                      </div>
-                     <div className="hidden md:block absolute top-1/2 right-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                     <div className="hidden md:block absolute top-1/2 right-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                        <button 
-                         onClick={() => {
-                           if (currentArticleIdx < currentData.articles.length - 1) {
-                             setCurrentArticleIdx(prev => prev + 1);
-                             setActiveMode('article');
-                             setIsPlaying(true);
-                           }
-                         }}
-                         disabled={currentArticleIdx === currentData.articles.length - 1}
-                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors ${currentArticleIdx === currentData.articles.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                         onClick={handleNext}
+                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}
                        >
                          <ChevronRight size={24} />
                        </button>
@@ -637,6 +694,7 @@ const App = () => {
                  ) : (
                    // Fallback / Moderation Title View (kein Bild vorhanden)
                    <div className="flex gap-4 items-start p-4">
+                      {/* ... same fallback as before ... */}
                       {displayIndex ? (
                         <div className="shrink-0 w-12 h-12 flex items-center justify-center border-2 border-slate-900 rounded-full text-slate-900 font-serif font-bold text-2xl mt-1">
                           {displayIndex}
@@ -737,7 +795,7 @@ const App = () => {
                      >
                         {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                      </button>
-                     <button onClick={handleSkip} className="text-slate-400 hover:text-slate-900 transition-colors">
+                     <button onClick={handleNext} className="text-slate-400 hover:text-slate-900 transition-colors">
                         <SkipForward size={24} strokeWidth={1.5} />
                      </button>
                   </div>
@@ -776,18 +834,6 @@ const App = () => {
                               <ArrowLeft size={18} />
                               <span>Zur Übersicht</span>
                            </button>
-
-                           {currentData.articles[currentArticleIdx].readUrl && (
-                              <a 
-                                 href={currentData.articles[currentArticleIdx].readUrl} 
-                                 target="_blank" 
-                                 rel="noopener noreferrer"
-                                 className="hidden md:flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
-                              >
-                                 <span>Artikel lesen</span>
-                                 <ExternalLink size={14} />
-                              </a>
-                           )}
                         </div>
                      )}
                   </div>
