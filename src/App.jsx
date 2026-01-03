@@ -22,8 +22,6 @@ import {
 } from 'lucide-react';
 
 // --- DATEN STRUKTUR ---
-// Hinweis: Da wir auf GitHub Pages und mit dem 'public' Ordner arbeiten,
-// referenzieren wir die Dateien hier direkt als Strings.
 const PLAYLIST_CONTENT = {
   morgen: {
     id: 'morgen',
@@ -202,7 +200,7 @@ const App = () => {
   const getSrc = (defaultName) => {
     // 1. Wenn Nutzer Datei manuell gewählt hat (Fallback für lokale Tests)
     if (userFiles[defaultName]) return userFiles[defaultName];
-    // 2. Standard: Wir gehen davon aus, dass die Datei im public-Ordner liegt
+    // 2. Standard: Wir gehen davon aus, dass die Datei im public-Ordner liegt (einfacher String)
     return defaultName;
   };
 
@@ -327,6 +325,11 @@ const App = () => {
             setIsPlaying(true);
         }
      }
+  };
+
+  const handleRewind = () => {
+     const ref = activeMode === 'moderation' ? modAudioRef : artAudioRef;
+     if(ref.current) ref.current.currentTime -= 10;
   };
 
   const handleAudioError = (e, fileName) => {
@@ -490,19 +493,23 @@ const App = () => {
              {showPlaylistMenu && (
                <div className="absolute right-0 top-full mt-0 w-64 bg-white shadow-xl border border-slate-200 rounded-b-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                  <div className="py-2">
-                   {Object.values(PLAYLIST_CONTENT).map(pl => (
-                     <button
-                       key={pl.id}
-                       onClick={() => {
-                         setActivePlaylist(pl.id);
-                         setShowPlaylistMenu(false);
-                       }}
-                       className={`w-full text-left px-5 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors ${activePlaylist === pl.id ? 'text-red-600 font-bold bg-red-50/50' : 'text-slate-700'}`}
-                     >
-                       <pl.icon size={18} />
-                       {pl.label}
-                     </button>
-                   ))}
+                   {Object.values(PLAYLIST_CONTENT).map(pl => {
+                     // We need to render the icon as a component
+                     const IconComponent = pl.icon;
+                     return (
+                       <button
+                         key={pl.id}
+                         onClick={() => {
+                           setActivePlaylist(pl.id);
+                           setShowPlaylistMenu(false);
+                         }}
+                         className={`w-full text-left px-5 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors ${activePlaylist === pl.id ? 'text-red-600 font-bold bg-red-50/50' : 'text-slate-700'}`}
+                       >
+                         <IconComponent size={18} />
+                         {pl.label}
+                       </button>
+                     );
+                   })}
                  </div>
                </div>
              )}
