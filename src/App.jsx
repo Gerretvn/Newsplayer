@@ -21,39 +21,15 @@ import {
   ChevronUp
 } from 'lucide-react';
 
-// --- DATEI IMPORT LOGIK ---
-let importedFiles = {};
-try {
-  importedFiles = {
-    logo: require('./image_2dc4c5.png'),
-    // Morgen Playlist Audio
-    mod_morgen: require('./Moderation.mp3'),
-    art1_morgen: require('./Artikel 1.mp3'),
-    art2_morgen: require('./Artikel 2.mp3'),
-    art3_morgen: require('./Artikel 3.mp3'),
-    art4_morgen: require('./Artikel 4.mp3'),
-    art5_morgen: require('./Artikel 5.mp3'),
-    art6_morgen: require('./Artikel 6.mp3'),
-    // Bilder
-    img1_morgen: require('./Bild Artikel 1.webp'),
-    img2_morgen: require('./Bild Artikel 2.webp'),
-    img3_morgen: require('./Bild Artikel 3.webp'),
-    img4_morgen: require('./Bild Artikel 4.webp'),
-    img5_morgen: require('./Bild Artikel 5.webp'),
-    img6_morgen: require('./Bild Artikel 6.webp'),
-  };
-} catch (e) {
-  importedFiles = { logo: "image_2dc4c5.png" };
-}
-
 // --- DATEN STRUKTUR ---
+// Hinweis: Da wir auf GitHub Pages und mit dem 'public' Ordner arbeiten,
+// referenzieren wir die Dateien hier direkt als Strings.
 const PLAYLIST_CONTENT = {
   morgen: {
     id: 'morgen',
     label: "Playlist am Morgen",
     icon: Sun,
     modFile: "Moderation.mp3",
-    modKey: "mod_morgen",
     modTitle: "Die Lage am Morgen: Das Briefing",
     modAuthors: "Die wichtigsten Themen des Tages im Überblick.",
     articles: [
@@ -64,9 +40,7 @@ const PLAYLIST_CONTENT = {
         modStart: 10,
         modEnd: 27,
         fileName: "Artikel 1.mp3",
-        fileKey: "art1_morgen",
         imageFile: "Bild Artikel 1.webp",
-        imageKey: "img1_morgen",
         readUrl: "https://www.spiegel.de/politik/deutschland/ukraine-gespraeche-hinter-den-kulissen-warnen-die-europaeer-selenskyj-a-08c9846e-6af5-4c69-b53a-8e802dc7aa77"
       },
       {
@@ -76,9 +50,7 @@ const PLAYLIST_CONTENT = {
         modStart: 28,
         modEnd: 45,
         fileName: "Artikel 2.mp3",
-        fileKey: "art2_morgen",
         imageFile: "Bild Artikel 2.webp",
-        imageKey: "img2_morgen",
         readUrl: "https://www.spiegel.de/ausland/wladimir-putin-angeblicher-angriff-auf-residenz-zweifel-an-russischen-vorwuerfen-91-angeblich-abgewehrte-drohnen-und-viele-ungereimtheiten-a-456e4e4f-9dc5-4e22-ad75-a82d8e4b1934"
       },
       {
@@ -88,9 +60,7 @@ const PLAYLIST_CONTENT = {
         modStart: 46,
         modEnd: 60,
         fileName: "Artikel 3.mp3",
-        fileKey: "art3_morgen",
         imageFile: "Bild Artikel 3.webp",
-        imageKey: "img3_morgen",
         readUrl: "https://www.spiegel.de/politik/deutschland/sanktionen-gegen-hate-aid-weitere-us-massnahmen-gegen-deutsche-befuerchtet-a-e0c8b6d9-95e2-4e76-8360-4ea9e3e1dc3d"
       },
       {
@@ -100,9 +70,7 @@ const PLAYLIST_CONTENT = {
         modStart: 61,
         modEnd: 77,
         fileName: "Artikel 4.mp3",
-        fileKey: "art4_morgen",
         imageFile: "Bild Artikel 4.webp",
-        imageKey: "img4_morgen",
         readUrl: "https://www.manager-magazin.de/unternehmen/handel/inflation-das-waren-die-groessten-preisspruenge-bei-lebensmitteln-2025-1767088287-a-69823e02-dac4-476e-bfec-c8e695bb6e86"
       },
       {
@@ -112,9 +80,7 @@ const PLAYLIST_CONTENT = {
         modStart: 79,
         modEnd: 106,
         fileName: "Artikel 5.mp3",
-        fileKey: "art5_morgen",
         imageFile: "Bild Artikel 5.webp",
-        imageKey: "img5_morgen",
         readUrl: "https://www.spiegel.de/gesundheit/alkohol-das-taugen-die-neuen-anti-kater-mittel-aus-asien-a-0ef45fa2-4fb7-4710-b0d3-3f6f07a4d741"
       },
       {
@@ -124,9 +90,7 @@ const PLAYLIST_CONTENT = {
         modStart: 107,
         modEnd: 133,
         fileName: "Artikel 6.mp3",
-        fileKey: "art6_morgen",
         imageFile: "Bild Artikel 6.webp",
-        imageKey: "img6_morgen",
         readUrl: "https://www.spiegel.de/fitness/balance-beim-muskeltraining-uebungen-fuer-laeufer-radsportler-und-fussballer-a-793e40f3-e682-4fec-b8b1-02bdba58cf43"
       }
     ]
@@ -136,7 +100,6 @@ const PLAYLIST_CONTENT = {
     label: "Playlist der Liebe",
     icon: Heart,
     modFile: "Moderation Liebe.mp3",
-    modKey: "mod_liebe",
     modTitle: "SPIEGEL Loveletter",
     modAuthors: "Psychologie & Partnerschaft – Die wichtigsten Erkenntnisse.",
     articles: [
@@ -147,7 +110,6 @@ const PLAYLIST_CONTENT = {
         modStart: 22,
         modEnd: 40,
         fileName: "Artikel 1 Liebe.mp3",
-        fileKey: "art1_liebe",
         readUrl: "https://www.spiegel.de/psychologie/fuenf-sprachen-der-liebe-wie-sie-erkennen-was-ihr-partner-oder-ihre-partnerin-wirklich-mag-a-5c2f582b-6ca0-4e3a-96e0-24a35041f644"
       },
       {
@@ -157,7 +119,6 @@ const PLAYLIST_CONTENT = {
         modStart: 41,
         modEnd: 56,
         fileName: "Artikel 2 Liebe.mp3",
-        fileKey: "art2_liebe",
         readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-ich-koche-fuer-tina-das-ist-meine-art-zu-sagen-ich-liebe-dich-a-733f3809-54d9-4b62-b91c-1481e1933e45"
       },
       {
@@ -167,7 +128,6 @@ const PLAYLIST_CONTENT = {
         modStart: 57,
         modEnd: 75,
         fileName: "Artikel 3 Liebe.mp3",
-        fileKey: "art3_liebe",
         readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-ueber-diese-themen-sollten-sie-sprechen-bevor-sie-sich-verlieben-a-f3265886-0929-4e12-8d77-62f97486e96f"
       },
       {
@@ -177,7 +137,6 @@ const PLAYLIST_CONTENT = {
         modStart: 76,
         modEnd: 94, 
         fileName: "Artikel 4 Liebe.mp3",
-        fileKey: "art4_liebe",
         readUrl: "https://www.spiegel.de/psychologie/gleichberechtigung-in-der-partnerschaft-diese-beiden-haben-geschafft-wvovon-andere-traeumen-a-76d499ed-be02-4029-9e80-8733230a108a"
       },
       {
@@ -187,7 +146,6 @@ const PLAYLIST_CONTENT = {
         modStart: 95,
         modEnd: 112, 
         fileName: "Artikel 5 Liebe.mp3",
-        fileKey: "art5_liebe",
         readUrl: "https://www.spiegel.de/psychologie/beziehungskrise-am-tiefsten-punkt-unserer-beziehung-heilte-uns-der-nackturlaub-a-6943b17c-2191-4993-80f4-5f1655be23c4"
       },
       {
@@ -197,7 +155,6 @@ const PLAYLIST_CONTENT = {
         modStart: 113,
         modEnd: 129,
         fileName: "Artikel 6 Liebe.mp3",
-        fileKey: "art6_liebe",
         readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-so-bewahren-sie-den-spass-in-ihrer-beziehung-a-096895e6-ec18-466d-9be2-49da43292419"
       },
       {
@@ -207,7 +164,6 @@ const PLAYLIST_CONTENT = {
         modStart: 130,
         modEnd: 146,
         fileName: "Artikel 7 Liebe.mp3",
-        fileKey: "art7_liebe",
         readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-benjamin-maack-ueber-das-spaete-glueck-a-2007823b-3195-48b4-938b-d54d24a9194e"
       }
     ]
@@ -243,19 +199,15 @@ const App = () => {
 
   const currentData = PLAYLIST_CONTENT[activePlaylist];
 
-  const getSrc = (key, defaultName) => {
+  const getSrc = (defaultName) => {
+    // 1. Wenn Nutzer Datei manuell gewählt hat (Fallback für lokale Tests)
     if (userFiles[defaultName]) return userFiles[defaultName];
-    const imported = importedFiles[key];
-    if (imported && typeof imported === 'object' && imported.default) {
-      return imported.default; 
-    }
-    if (imported && typeof imported === 'string' && imported.length > 0) {
-      return imported;
-    }
+    // 2. Standard: Wir gehen davon aus, dass die Datei im public-Ordner liegt
     return defaultName;
   };
 
   const activeMarkerIdx = useMemo(() => {
+    if (!currentData || !currentData.articles) return -1;
     return currentData.articles.findIndex(a => modTime >= a.modStart && modTime <= a.modEnd);
   }, [modTime, currentData]);
 
@@ -337,12 +289,6 @@ const App = () => {
 
   const backToOverview = () => {
     setActiveMode('moderation');
-    // Intelligent back: Jump to START of the current marker in moderation if we are deep in article,
-    // or just play from where we left off?
-    // User requested: "Zur Übersicht steht dann an derselben Stelle mit Pfeil nach links"
-    // and "analog wieder zum überblick zurück mit einem Pfeil oben mittig im Bild"
-    
-    // Logic: If we switch back to moderation, ensure we are at the marker corresponding to the article we just heard
     if (modAudioRef.current) {
         modAudioRef.current.currentTime = currentData.articles[currentArticleIdx].modStart;
     }
@@ -351,7 +297,6 @@ const App = () => {
 
   const handleNext = () => {
     if (activeMode === 'moderation') {
-      // Find next marker that starts after current time
       const nextArticle = currentData.articles.find(a => a.modStart > modTime + 1);
       if (nextArticle && modAudioRef.current) {
         modAudioRef.current.currentTime = nextArticle.modStart;
@@ -367,16 +312,13 @@ const App = () => {
 
   const handlePrev = () => {
      if (activeMode === 'moderation') {
-       // Find previous marker
-       const tolerance = 2; // seconds buffer
-       // reverse copy to find the latest marker that is before current time
+       const tolerance = 2; 
        const prevArticle = [...currentData.articles].reverse().find(a => a.modStart < modTime - tolerance);
        
        if (prevArticle && modAudioRef.current) {
          modAudioRef.current.currentTime = prevArticle.modStart;
          setIsPlaying(true);
        } else if (modAudioRef.current) {
-         // If no previous marker found, go to start
          modAudioRef.current.currentTime = 0;
        }
      } else {
@@ -439,7 +381,6 @@ const App = () => {
     const isUpSwipe = distanceY > minSwipeDistance;
     const isDownSwipe = distanceY < -minSwipeDistance;
 
-    // Prioritize horizontal swipe if dominance is clear
     if (Math.abs(distanceX) > Math.abs(distanceY)) {
         if (isLeftSwipe) {
             handleNext();
@@ -447,7 +388,6 @@ const App = () => {
             handlePrev();
         }
     } else {
-        // Vertical Swipe Logic
         if (isDownSwipe && activeMode === 'moderation' && activeMarkerIdx !== -1) {
             jumpToArticle();
         } else if (isUpSwipe && activeMode === 'article') {
@@ -463,7 +403,7 @@ const App = () => {
         <div className="bg-white p-8 md:p-12 rounded-2xl shadow-xl w-full max-w-sm border border-slate-200">
           <div className="flex flex-col items-center mb-8">
             <img 
-               src={getSrc('logo', 'image_2dc4c5.png')} 
+               src={getSrc('image_2dc4c5.png')} 
                alt="SPIEGEL" 
                className="h-10 object-contain mb-6"
                onError={(e) => e.target.style.display = 'none'}
@@ -502,13 +442,6 @@ const App = () => {
               Anmelden
             </button>
           </form>
-          
-          <div className="mt-8 text-center">
-            <p className="text-[10px] text-slate-400">
-              Interner Entwicklungs-Build v1.0<br/>
-              Nur für autorisierte Nutzer.
-            </p>
-          </div>
         </div>
       </div>
     );
@@ -530,13 +463,12 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#F6F6F6] text-slate-900 font-sans selection:bg-red-100">
-      
       {/* Top Navigation Bar */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
              <img 
-               src={getSrc('logo', 'image_2dc4c5.png')} 
+               src={getSrc('image_2dc4c5.png')} 
                alt="SPIEGEL" 
                className="h-8 md:h-10 object-contain"
                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
@@ -578,6 +510,7 @@ const App = () => {
         </div>
       </nav>
 
+      {/* Main Content */}
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
         
         {/* Fallback File Linker */}
@@ -605,7 +538,6 @@ const App = () => {
           {/* LEFT: Active Player */}
           <div className="lg:col-span-7 space-y-8">
             
-            {/* Header / Image Area */}
             <div>
                <div className="flex items-center gap-3 mb-4">
                  <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest">
@@ -614,12 +546,12 @@ const App = () => {
                  </span>
                </div>
 
-               {/* Image Display with Navigation */}
+               {/* Image Display */}
                <div className="relative aspect-[16/9] bg-slate-100 rounded-lg overflow-hidden mb-4 group">
                  {currentArticleForImage && currentArticleForImage.imageFile ? (
                    <>
                      <a 
-                       href={currentArticleForImage.readUrl} 
+                       href={currentArticleForImage.readUrl || "#"} 
                        target="_blank" 
                        rel="noopener noreferrer"
                        className="block w-full h-full relative"
@@ -628,26 +560,19 @@ const App = () => {
                        onTouchEnd={onTouchEnd}
                      >
                        <img 
-                         src={getSrc(currentArticleForImage.imageKey, currentArticleForImage.imageFile)} 
+                         src={getSrc(currentArticleForImage.imageFile)} 
                          alt={currentArticleForImage.title}
                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                        />
                        
-                       {/* Overlay with Number */}
                        <div className="absolute top-4 left-4 flex items-center justify-center w-12 h-12 border-2 border-white rounded-full text-white font-serif font-bold text-2xl bg-black/30 backdrop-blur-sm z-10">
                          {displayIndex}
                        </div>
 
-                       {/* Vertical Navigation Buttons in Overlay */}
-                       {/* Dive Down Button (Moderation only) */}
                        {activeMode === 'moderation' && (
                          <div 
                             className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                jumpToArticle();
-                            }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); jumpToArticle(); }}
                          >
                             <div className="bg-black/50 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm animate-bounce">
                                 <ChevronDown size={28} />
@@ -655,15 +580,10 @@ const App = () => {
                          </div>
                        )}
 
-                       {/* Back Up Button (Article only) */}
                        {activeMode === 'article' && (
                          <div 
                             className="absolute top-4 right-1/2 translate-x-1/2 z-20"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                backToOverview();
-                            }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); backToOverview(); }}
                          >
                             <div className="bg-black/50 hover:bg-slate-700 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm">
                                 <ChevronUp size={28} />
@@ -672,29 +592,21 @@ const App = () => {
                        )}
                      </a>
 
-                     {/* Left/Right Navigation Arrows (Desktop) */}
+                     {/* Desktop Arrows */}
                      <div className="hidden md:block absolute top-1/2 left-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                       <button 
-                         onClick={handlePrev}
-                         disabled={activeMode === 'moderation' && modTime < 5 && activeMarkerIdx <= 0}
-                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}
-                       >
+                       <button onClick={handlePrev} className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}>
                          <ChevronLeft size={24} />
                        </button>
                      </div>
                      <div className="hidden md:block absolute top-1/2 right-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                       <button 
-                         onClick={handleNext}
-                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}
-                       >
+                       <button onClick={handleNext} className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}>
                          <ChevronRight size={24} />
                        </button>
                      </div>
                    </>
                  ) : (
-                   // Fallback / Moderation Title View (kein Bild vorhanden)
+                   // Fallback Text View (wenn kein Bild)
                    <div className="flex gap-4 items-start p-4">
-                      {/* ... same fallback as before ... */}
                       {displayIndex ? (
                         <div className="shrink-0 w-12 h-12 flex items-center justify-center border-2 border-slate-900 rounded-full text-slate-900 font-serif font-bold text-2xl mt-1">
                           {displayIndex}
@@ -724,9 +636,8 @@ const App = () => {
                </div>
             </div>
 
-            {/* Player Module */}
+            {/* Player UI */}
             <div className="bg-white border border-slate-200 shadow-sm p-6 md:p-8 relative">
-               
                <h4 className="text-sm font-serif font-bold text-slate-900 text-center mb-4 truncate px-4">
                   {activeMode === 'moderation' 
                       ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].title : currentData.modTitle)
@@ -734,7 +645,6 @@ const App = () => {
                   }
                </h4>
 
-               {/* Timeline */}
                <div className="mb-6 md:mb-10">
                   <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
                      <span>{formatTime(activeMode === 'moderation' ? modTime : artTime)}</span>
@@ -743,27 +653,9 @@ const App = () => {
                   
                   <div className="relative h-12 flex items-center cursor-pointer">
                      <div className="absolute w-full h-1 bg-slate-200"></div>
-                     <div 
-                        className="absolute h-1 bg-red-600 z-10 transition-all duration-300"
-                        style={{ width: `${((activeMode === 'moderation' ? modTime : artTime) / (activeMode === 'moderation' ? (modDuration || 1) : (artDuration || 1))) * 100}%` }}
-                     >
+                     <div className="absolute h-1 bg-red-600 z-10 transition-all duration-300" style={{ width: `${((activeMode === 'moderation' ? modTime : artTime) / (activeMode === 'moderation' ? (modDuration || 1) : (artDuration || 1))) * 100}%` }}>
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-red-600 rounded-full shadow-md"></div>
                      </div>
-
-                     {activeMode === 'moderation' && modDuration > 0 && currentData.articles.map((a) => (
-                       <div 
-                         key={a.id}
-                         className={`absolute h-4 w-1 top-1/2 -translate-y-1/2 z-20 transition-all duration-500 group/marker ${modTime >= a.modStart && modTime <= a.modEnd ? 'bg-red-600 h-6 w-1.5' : 'bg-slate-300 hover:bg-slate-400'}`}
-                         style={{ left: `${(a.modStart / modDuration) * 100}%` }}
-                       >
-                         <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 hidden group-hover/marker:block bg-slate-900 text-white text-[10px] px-2 py-1 whitespace-nowrap z-50 rounded shadow-lg">
-                           <span className="font-bold text-red-400 mr-1">{a.id}.</span>
-                           {a.title.substring(0, 20)}...
-                           <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
-                         </div>
-                       </div>
-                     ))}
-                     
                      <input 
                        type="range"
                        min="0"
@@ -772,54 +664,32 @@ const App = () => {
                        value={activeMode === 'moderation' ? modTime : artTime}
                        onChange={(e) => {
                          const val = parseFloat(e.target.value);
-                         if (activeMode === 'moderation') {
-                           if (modAudioRef.current) modAudioRef.current.currentTime = val;
-                         } else {
-                           if (artAudioRef.current) artAudioRef.current.currentTime = val;
-                         }
+                         if (activeMode === 'moderation') { if (modAudioRef.current) modAudioRef.current.currentTime = val; }
+                         else { if (artAudioRef.current) artAudioRef.current.currentTime = val; }
                        }}
                        className="absolute w-full h-full opacity-0 cursor-pointer z-40"
                      />
                   </div>
                </div>
 
-               {/* Controls */}
                <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0">
                   <div className="flex items-center justify-center gap-6 w-full md:w-auto">
-                     <button onClick={handleRewind} className="text-slate-400 hover:text-slate-900 transition-colors">
-                        <SkipBack size={24} strokeWidth={1.5} />
-                     </button>
-                     <button 
-                        onClick={togglePlay}
-                        className="w-16 h-16 bg-slate-900 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
-                     >
+                     <button onClick={handleRewind} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipBack size={24} strokeWidth={1.5} /></button>
+                     <button onClick={togglePlay} className="w-16 h-16 bg-slate-900 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
                         {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                      </button>
-                     <button onClick={handleNext} className="text-slate-400 hover:text-slate-900 transition-colors">
-                        <SkipForward size={24} strokeWidth={1.5} />
-                     </button>
+                     <button onClick={handleNext} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipForward size={24} strokeWidth={1.5} /></button>
                   </div>
 
                   <div className="flex-1 flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
                      {activeMode === 'moderation' && activeMarkerIdx !== -1 && (
                         <>
-                           <button 
-                              onClick={jumpToArticle}
-                              className="flex items-center gap-2 text-red-600 font-bold text-sm uppercase tracking-wider hover:gap-3 transition-all group"
-                           >
-                              <span>ARTIKEL HÖREN</span>
-                              <ArrowRight size={18} />
+                           <button onClick={jumpToArticle} className="flex items-center gap-2 text-red-600 font-bold text-sm uppercase tracking-wider hover:gap-3 transition-all group">
+                              <span>ARTIKEL HÖREN</span> <ArrowRight size={18} />
                            </button>
-                           
                            {currentData.articles[activeMarkerIdx].readUrl && (
-                              <a 
-                                 href={currentData.articles[activeMarkerIdx].readUrl} 
-                                 target="_blank" 
-                                 rel="noopener noreferrer"
-                                 className="hidden md:flex items-center gap-2 text-slate-500 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
-                              >
-                                 <span>ARTIKEL LESEN</span>
-                                 <ExternalLink size={14} />
+                              <a href={currentData.articles[activeMarkerIdx].readUrl} target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 text-slate-500 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors">
+                                 <span>ARTIKEL LESEN</span> <ExternalLink size={14} />
                               </a>
                            )}
                         </>
@@ -827,12 +697,8 @@ const App = () => {
                      
                      {activeMode === 'article' && (
                         <div className="flex flex-col items-center md:items-end gap-2">
-                           <button 
-                              onClick={backToOverview}
-                              className="flex items-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-wider hover:text-slate-900 transition-all"
-                           >
-                              <ArrowLeft size={18} />
-                              <span>Zur Übersicht</span>
+                           <button onClick={backToOverview} className="flex items-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-wider hover:text-slate-900 transition-all">
+                              <ArrowLeft size={18} /> <span>Zur Übersicht</span>
                            </button>
                         </div>
                      )}
@@ -840,69 +706,35 @@ const App = () => {
                </div>
             </div>
             
-            {/* Info Box */}
             <div className="bg-slate-100 p-6 text-sm text-slate-600 leading-relaxed font-serif">
               <span className="font-bold text-slate-900 block mb-2 font-sans text-xs uppercase tracking-widest">Hinweis zur Nutzung</span>
-              Sie befinden sich im {activeMode === 'moderation' ? 'Playlist-Modus' : 'Artikel-Modus'}. 
-              {activeMode === 'moderation' 
-                 ? " Die Moderation führt Sie durch die Playlist. Bei Interesse an einem Thema können Sie jederzeit in die Tiefe gehen."
-                 : " Hier hören Sie den vollständigen Beitrag. Über 'Zurück' gelangen Sie nahtlos an Ihre letzte Stelle in der Playlist."
-              }
+              Sie befinden sich im {activeMode === 'moderation' ? 'Playlist-Modus' : 'Artikel-Modus'}.
             </div>
           </div>
 
           {/* RIGHT: List */}
           <div className="lg:col-span-5 bg-white border border-slate-200 shadow-sm">
             <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-               <h3 className="font-bold text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2">
-                 <List size={16} className="text-red-600" />
-                 Inhalt der Playlist
-               </h3>
+               <h3 className="font-bold text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2"><List size={16} className="text-red-600" /> Inhalt der Playlist</h3>
                <span className="text-xs font-mono text-slate-400">{currentData.articles.length} Beiträge</span>
             </div>
-            
             <div className="divide-y divide-slate-100">
                {currentData.articles.map((article, idx) => {
                  const isPlayingThis = activeMode === 'article' && currentArticleIdx === idx;
                  const isModerationFocus = activeMode === 'moderation' && activeMarkerIdx === idx;
-                 
                  return (
-                   <button 
-                     key={article.id}
-                     onClick={() => {
-                        setCurrentArticleIdx(idx);
-                        setActiveMode('article');
-                        setIsPlaying(true);
-                     }}
-                     className={`w-full text-left p-5 transition-all group hover:bg-slate-50 flex gap-4 ${
-                       isPlayingThis ? 'bg-slate-50' : ''
-                     } ${isModerationFocus ? 'bg-red-50/30' : ''}`}
-                   >
+                   <button key={article.id} onClick={() => { setCurrentArticleIdx(idx); setActiveMode('article'); setIsPlaying(true); }} className={`w-full text-left p-5 transition-all group hover:bg-slate-50 flex gap-4 ${isPlayingThis ? 'bg-slate-50' : ''} ${isModerationFocus ? 'bg-red-50/30' : ''}`}>
                      <div className="shrink-0 pt-1">
-                        {isPlayingThis ? (
-                           <div className="w-6 h-6 flex items-center justify-center">
-                              <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                           </div>
-                        ) : isModerationFocus ? (
-                           <div className="w-6 h-6 flex items-center justify-center border border-red-200 text-red-600 text-xs font-bold rounded-full">
-                              <Mic2 size={12} />
-                           </div>
-                        ) : (
-                           <span className="text-slate-300 font-serif text-lg italic group-hover:text-red-400">{idx + 1}</span>
-                        )}
+                        {isPlayingThis ? <div className="w-6 h-6 flex items-center justify-center"><div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div></div> :
+                         isModerationFocus ? <div className="w-6 h-6 flex items-center justify-center border border-red-200 text-red-600 text-xs font-bold rounded-full"><Mic2 size={12} /></div> :
+                         <span className="text-slate-300 font-serif text-lg italic group-hover:text-red-400">{idx + 1}</span>}
                      </div>
-
                      <div className="space-y-1">
-                        <h4 className={`text-base font-serif font-medium leading-snug ${isPlayingThis || isModerationFocus ? 'text-slate-900' : 'text-slate-700 group-hover:text-slate-900'}`}>
-                           {article.title}
-                        </h4>
+                        <h4 className={`text-base font-serif font-medium leading-snug ${isPlayingThis || isModerationFocus ? 'text-slate-900' : 'text-slate-700 group-hover:text-slate-900'}`}>{article.title}</h4>
                         <div className="flex items-center gap-3 text-xs text-slate-400 uppercase tracking-wide">
-                           <span>{article.authors.split(',')[0]}</span>
+                           <span>{article.authors ? article.authors.split(',')[0] : 'Spiegel Audio'}</span>
                            <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                           <span className="flex items-center gap-1">
-                              <Clock size={10} />
-                              {formatTime(article.modEnd - article.modStart)}
-                           </span>
+                           <span className="flex items-center gap-1"><Clock size={10} /> {formatTime(article.modEnd - article.modStart)}</span>
                         </div>
                      </div>
                    </button>
@@ -910,34 +742,12 @@ const App = () => {
                })}
             </div>
           </div>
-
         </main>
 
         <div className="hidden">
-          <audio 
-            ref={modAudioRef}
-            src={getSrc(currentData.modKey, currentData.modFile)}
-            onLoadedMetadata={(e) => setModDuration(e.target.duration)}
-            onTimeUpdate={(e) => setModTime(e.target.currentTime)}
-            onEnded={() => setIsPlaying(false)}
-            onError={(e) => handleAudioError(e, currentData.modFile)}
-          />
-          <audio 
-            ref={artAudioRef}
-            src={getSrc(currentData.articles[currentArticleIdx].fileKey, currentData.articles[currentArticleIdx].fileName)}
-            onLoadedMetadata={(e) => setArtDuration(e.target.duration)}
-            onTimeUpdate={(e) => setArtTime(e.target.currentTime)}
-            onEnded={() => {
-              if (currentArticleIdx < currentData.articles.length - 1) {
-                setCurrentArticleIdx(prev => prev + 1);
-              } else {
-                setIsPlaying(false);
-              }
-            }}
-            onError={(e) => handleAudioError(e, currentData.articles[currentArticleIdx].fileName)}
-          />
+          <audio ref={modAudioRef} src={getSrc(currentData.modFile)} onLoadedMetadata={(e) => setModDuration(e.target.duration)} onTimeUpdate={(e) => setModTime(e.target.currentTime)} onEnded={() => setIsPlaying(false)} onError={(e) => handleAudioError(e, currentData.modFile)} />
+          <audio ref={artAudioRef} src={getSrc(currentData.articles[currentArticleIdx].fileName)} onLoadedMetadata={(e) => setArtDuration(e.target.duration)} onTimeUpdate={(e) => setArtTime(e.target.currentTime)} onEnded={() => { if (currentArticleIdx < currentData.articles.length - 1) { setCurrentArticleIdx(prev => prev + 1); } else { setIsPlaying(false); } }} onError={(e) => handleAudioError(e, currentData.articles[currentArticleIdx].fileName)} />
         </div>
-
       </div>
     </div>
   );
