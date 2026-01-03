@@ -14,15 +14,19 @@ import {
   ExternalLink,
   ChevronDown,
   Heart,
-  Sun
+  Sun,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 // --- DATEI IMPORT LOGIK ---
+// Versucht, Dateien aus 'src' zu laden. Falls das fehlschlägt (z.B. weil Dateien in 'public' liegen),
+// greift der Fallback auf die Dateinamen-Strings in der Datenstruktur.
 let importedFiles = {};
 try {
   importedFiles = {
     logo: require('./image_2dc4c5.png'),
-    // Morgen Playlist
+    // Morgen Playlist Audio (Import-Versuch)
     mod_morgen: require('./Moderation.mp3'),
     art1_morgen: require('./Artikel 1.mp3'),
     art2_morgen: require('./Artikel 2.mp3'),
@@ -30,18 +34,16 @@ try {
     art4_morgen: require('./Artikel 4.mp3'),
     art5_morgen: require('./Artikel 5.mp3'),
     art6_morgen: require('./Artikel 6.mp3'),
-    // Liebe Playlist (Platzhalter-Dateinamen, müssen im public Ordner liegen)
-    mod_liebe: "Moderation Liebe.mp3", 
-    art1_liebe: "Artikel 1 Liebe.mp3",
-    art2_liebe: "Artikel 2 Liebe.mp3",
-    art3_liebe: "Artikel 3 Liebe.mp3",
-    art4_liebe: "Artikel 4 Liebe.mp3",
-    art5_liebe: "Artikel 5 Liebe.mp3",
-    art6_liebe: "Artikel 6 Liebe.mp3",
-    art7_liebe: "Artikel 7 Liebe.mp3"
+    // Bilder (Import-Versuch)
+    img1_morgen: require('./Bild Artikel 1.webp'),
+    img2_morgen: require('./Bild Artikel 2.webp'),
+    img3_morgen: require('./Bild Artikel 3.webp'),
+    img4_morgen: require('./Bild Artikel 4.webp'),
+    img5_morgen: require('./Bild Artikel 5.webp'),
+    img6_morgen: require('./Bild Artikel 6.webp'),
   };
 } catch (e) {
-  // Fallback für reine String-Pfade
+  // Wenn Importe fehlen, nutzen wir Fallbacks
   importedFiles = { logo: "image_2dc4c5.png" };
 }
 
@@ -64,6 +66,8 @@ const PLAYLIST_CONTENT = {
         modEnd: 27,
         fileName: "Artikel 1.mp3",
         fileKey: "art1_morgen",
+        imageFile: "Bild Artikel 1.webp",
+        imageKey: "img1_morgen",
         readUrl: "https://www.spiegel.de/politik/deutschland/ukraine-gespraeche-hinter-den-kulissen-warnen-die-europaeer-selenskyj-a-08c9846e-6af5-4c69-b53a-8e802dc7aa77"
       },
       {
@@ -74,6 +78,8 @@ const PLAYLIST_CONTENT = {
         modEnd: 45,
         fileName: "Artikel 2.mp3",
         fileKey: "art2_morgen",
+        imageFile: "Bild Artikel 2.webp",
+        imageKey: "img2_morgen",
         readUrl: "https://www.spiegel.de/ausland/wladimir-putin-angeblicher-angriff-auf-residenz-zweifel-an-russischen-vorwuerfen-91-angeblich-abgewehrte-drohnen-und-viele-ungereimtheiten-a-456e4e4f-9dc5-4e22-ad75-a82d8e4b1934"
       },
       {
@@ -84,6 +90,8 @@ const PLAYLIST_CONTENT = {
         modEnd: 60,
         fileName: "Artikel 3.mp3",
         fileKey: "art3_morgen",
+        imageFile: "Bild Artikel 3.webp",
+        imageKey: "img3_morgen",
         readUrl: "https://www.spiegel.de/politik/deutschland/sanktionen-gegen-hate-aid-weitere-us-massnahmen-gegen-deutsche-befuerchtet-a-e0c8b6d9-95e2-4e76-8360-4ea9e3e1dc3d"
       },
       {
@@ -94,6 +102,8 @@ const PLAYLIST_CONTENT = {
         modEnd: 77,
         fileName: "Artikel 4.mp3",
         fileKey: "art4_morgen",
+        imageFile: "Bild Artikel 4.webp",
+        imageKey: "img4_morgen",
         readUrl: "https://www.manager-magazin.de/unternehmen/handel/inflation-das-waren-die-groessten-preisspruenge-bei-lebensmitteln-2025-1767088287-a-69823e02-dac4-476e-bfec-c8e695bb6e86"
       },
       {
@@ -104,6 +114,8 @@ const PLAYLIST_CONTENT = {
         modEnd: 106,
         fileName: "Artikel 5.mp3",
         fileKey: "art5_morgen",
+        imageFile: "Bild Artikel 5.webp",
+        imageKey: "img5_morgen",
         readUrl: "https://www.spiegel.de/gesundheit/alkohol-das-taugen-die-neuen-anti-kater-mittel-aus-asien-a-0ef45fa2-4fb7-4710-b0d3-3f6f07a4d741"
       },
       {
@@ -114,6 +126,8 @@ const PLAYLIST_CONTENT = {
         modEnd: 133,
         fileName: "Artikel 6.mp3",
         fileKey: "art6_morgen",
+        imageFile: "Bild Artikel 6.webp",
+        imageKey: "img6_morgen",
         readUrl: "https://www.spiegel.de/fitness/balance-beim-muskeltraining-uebungen-fuer-laeufer-radsportler-und-fussballer-a-793e40f3-e682-4fec-b8b1-02bdba58cf43"
       }
     ]
@@ -162,7 +176,7 @@ const PLAYLIST_CONTENT = {
         title: "Gleichberechtigung: Diese beiden haben geschafft, wovon andere träumen",
         authors: "Krishna Pandit und Shruthi Hangal",
         modStart: 76,
-        modEnd: 94, // 1:16 - 1:34 (Korrektur: keine Überlappung)
+        modEnd: 94, 
         fileName: "Artikel 4 Liebe.mp3",
         fileKey: "art4_liebe",
         readUrl: "https://www.spiegel.de/psychologie/gleichberechtigung-in-der-partnerschaft-diese-beiden-haben-geschafft-wvovon-andere-traeumen-a-76d499ed-be02-4029-9e80-8733230a108a"
@@ -172,7 +186,7 @@ const PLAYLIST_CONTENT = {
         title: "Am tiefsten Punkt unserer Beziehung heilte uns der Nackturlaub",
         authors: "Hanna Zobel",
         modStart: 95,
-        modEnd: 112, // 1:35 - 1:52
+        modEnd: 112, 
         fileName: "Artikel 5 Liebe.mp3",
         fileKey: "art5_liebe",
         readUrl: "https://www.spiegel.de/psychologie/beziehungskrise-am-tiefsten-punkt-unserer-beziehung-heilte-uns-der-nackturlaub-a-6943b17c-2191-4993-80f4-5f1655be23c4"
@@ -182,7 +196,7 @@ const PLAYLIST_CONTENT = {
         title: "So bewahren Sie den Spaß in Ihrer Beziehung",
         authors: "Anne Ahnis",
         modStart: 113,
-        modEnd: 129, // 1:53 - 2:09
+        modEnd: 129,
         fileName: "Artikel 6 Liebe.mp3",
         fileKey: "art6_liebe",
         readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-so-bewahren-sie-den-spass-in-ihrer-beziehung-a-096895e6-ec18-466d-9be2-49da43292419"
@@ -192,7 +206,7 @@ const PLAYLIST_CONTENT = {
         title: "Benjamin Maack über das späte Glück",
         authors: "Benjamin Maack",
         modStart: 130,
-        modEnd: 146, // 2:10 - 2:26
+        modEnd: 146,
         fileName: "Artikel 7 Liebe.mp3",
         fileKey: "art7_liebe",
         readUrl: "https://www.spiegel.de/psychologie/spiegel-loveletter-benjamin-maack-ueber-das-spaete-glueck-a-2007823b-3195-48b4-938b-d54d24a9194e"
@@ -202,7 +216,7 @@ const PLAYLIST_CONTENT = {
 };
 
 const App = () => {
-  const [activePlaylist, setActivePlaylist] = useState('morgen'); // 'morgen' oder 'liebe'
+  const [activePlaylist, setActivePlaylist] = useState('morgen'); 
   const [activeMode, setActiveMode] = useState('moderation'); 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentArticleIdx, setCurrentArticleIdx] = useState(0);
@@ -226,7 +240,7 @@ const App = () => {
 
   const getSrc = (key, defaultName) => {
     if (userFiles[defaultName]) return userFiles[defaultName];
-    // Fallback: Check if we have an imported asset, otherwise use defaultName string
+    // Fallback: Prüfe importierten Key, sonst nutze den Dateinamen (für Public Folder)
     const imported = importedFiles[key];
     if (imported && typeof imported === 'object' && imported.default) {
       return imported.default; 
@@ -338,7 +352,7 @@ const App = () => {
     if (err && err.code === 4) {
       if (!userFiles[fileName]) {
         setNeedsFileLink(true);
-        setError(`Audio-Datei nicht gefunden.`);
+        setError(`Datei nicht gefunden: ${fileName}`);
       }
     }
     setIsPlaying(false);
@@ -356,12 +370,49 @@ const App = () => {
     setIsPlaying(false); 
   };
 
+  // Swipe handling
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  }
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      if (currentArticleIdx < currentData.articles.length - 1) {
+        setCurrentArticleIdx(prev => prev + 1);
+        setActiveMode('article');
+        setIsPlaying(true);
+      }
+    } else if (isRightSwipe) {
+      if (currentArticleIdx > 0) {
+        setCurrentArticleIdx(prev => prev - 1);
+        setActiveMode('article');
+        setIsPlaying(true);
+      }
+    }
+  }
+
   let displayIndex = null;
   if (activeMode === 'article') {
     displayIndex = currentArticleIdx + 1;
   } else if (activeMode === 'moderation' && activeMarkerIdx !== -1) {
     displayIndex = activeMarkerIdx + 1;
   }
+
+  const currentArticleForImage = activeMode === 'moderation' && activeMarkerIdx !== -1 
+    ? currentData.articles[activeMarkerIdx] 
+    : activeMode === 'article'
+      ? currentData.articles[currentArticleIdx]
+      : null;
 
   return (
     <div className="min-h-screen bg-[#F6F6F6] text-slate-900 font-sans selection:bg-red-100">
@@ -370,15 +421,11 @@ const App = () => {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-             {/* Logo */}
              <img 
                src={getSrc('logo', 'image_2dc4c5.png')} 
                alt="SPIEGEL" 
                className="h-8 md:h-10 object-contain"
-               onError={(e) => {
-                 e.target.style.display = 'none';
-                 e.target.nextSibling.style.display = 'block';
-               }}
+               onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
              />
              <span className="hidden text-red-600 font-black text-2xl tracking-tighter">SPIEGEL</span>
              <span className="hidden md:inline text-slate-400 font-light border-l border-slate-300 pl-4 text-sm tracking-wide uppercase">Audio</span>
@@ -394,7 +441,6 @@ const App = () => {
                 <ChevronDown size={14} className={`transition-transform duration-300 ${showPlaylistMenu ? 'rotate-180' : ''}`} />
              </button>
 
-             {/* Playlist Dropdown */}
              {showPlaylistMenu && (
                <div className="absolute right-0 top-full mt-0 w-64 bg-white shadow-xl border border-slate-200 rounded-b-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                  <div className="py-2">
@@ -428,12 +474,12 @@ const App = () => {
               <div className="space-y-3 flex-1">
                 <h3 className="text-slate-900 font-bold text-lg font-serif">Dateizugriff erforderlich</h3>
                 <p className="text-slate-700 text-sm leading-relaxed max-w-2xl">
-                  Bitte stellen Sie sicher, dass alle Audio-Dateien (auch für die neue Playlist) verfügbar sind.
+                  Bitte stellen Sie sicher, dass alle Audio-Dateien (auch für die neue Playlist) im public-Ordner verfügbar sind.
                 </p>
                 <label className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 text-sm font-bold hover:bg-slate-700 transition-colors cursor-pointer">
                   <Upload size={16} />
                   <span>Dateien verknüpfen</span>
-                  <input type="file" multiple accept="audio/*" onChange={handleFileSelect} className="hidden" />
+                  <input type="file" multiple accept="audio/*,image/*" onChange={handleFileSelect} className="hidden" />
                 </label>
               </div>
             </div>
@@ -445,7 +491,7 @@ const App = () => {
           {/* LEFT: Active Player */}
           <div className="lg:col-span-7 space-y-8">
             
-            {/* Header */}
+            {/* Header / Image Area */}
             <div>
                <div className="flex items-center gap-3 mb-4">
                  <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest">
@@ -453,40 +499,107 @@ const App = () => {
                    {currentData.label}
                  </span>
                </div>
-               
-               <div className="flex gap-4 items-start">
-                  {displayIndex ? (
-                    <div className="shrink-0 w-12 h-12 flex items-center justify-center border-2 border-slate-900 rounded-full text-slate-900 font-serif font-bold text-2xl mt-1">
-                      {displayIndex}
-                    </div>
-                  ) : (
-                    <div className="shrink-0 w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 mt-1">
-                      <Mic2 size={24} />
-                    </div>
-                  )}
 
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-serif font-bold leading-tight text-slate-900">
-                      {activeMode === 'moderation' 
-                          ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].title : currentData.modTitle)
-                          : currentData.articles[currentArticleIdx].title
-                      }
-                    </h1>
-                    <p className="text-slate-600 text-lg mt-3 font-serif italic pl-1">
-                      {activeMode === 'moderation' 
-                        ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].authors : currentData.modAuthors)
-                        : currentData.articles[currentArticleIdx].authors
-                      }
-                    </p>
-                  </div>
+               {/* Image Display with Navigation */}
+               <div className="relative aspect-[16/9] bg-slate-100 rounded-lg overflow-hidden mb-4 group">
+                 {currentArticleForImage && currentArticleForImage.imageFile ? (
+                   <>
+                     <a 
+                       href={currentArticleForImage.readUrl} 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="block w-full h-full relative"
+                       onTouchStart={onTouchStart}
+                       onTouchMove={onTouchMove}
+                       onTouchEnd={onTouchEnd}
+                     >
+                       <img 
+                         src={getSrc(currentArticleForImage.imageKey, currentArticleForImage.imageFile)} 
+                         alt={currentArticleForImage.title}
+                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                       />
+                       {/* Overlay with Number */}
+                       <div className="absolute top-4 left-4 flex items-center justify-center w-12 h-12 border-2 border-white rounded-full text-white font-serif font-bold text-2xl bg-black/30 backdrop-blur-sm">
+                         {displayIndex}
+                       </div>
+                     </a>
+
+                     {/* Desktop Navigation Arrows */}
+                     <div className="hidden md:block absolute top-1/2 left-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                       <button 
+                         onClick={() => {
+                           if (currentArticleIdx > 0) {
+                             setCurrentArticleIdx(prev => prev - 1);
+                             setActiveMode('article');
+                             setIsPlaying(true);
+                           }
+                         }}
+                         disabled={currentArticleIdx === 0}
+                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors ${currentArticleIdx === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                       >
+                         <ChevronLeft size={24} />
+                       </button>
+                     </div>
+                     <div className="hidden md:block absolute top-1/2 right-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                       <button 
+                         onClick={() => {
+                           if (currentArticleIdx < currentData.articles.length - 1) {
+                             setCurrentArticleIdx(prev => prev + 1);
+                             setActiveMode('article');
+                             setIsPlaying(true);
+                           }
+                         }}
+                         disabled={currentArticleIdx === currentData.articles.length - 1}
+                         className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors ${currentArticleIdx === currentData.articles.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                       >
+                         <ChevronRight size={24} />
+                       </button>
+                     </div>
+                   </>
+                 ) : (
+                   // Fallback / Moderation Title View (kein Bild vorhanden)
+                   <div className="flex gap-4 items-start p-4">
+                      {displayIndex ? (
+                        <div className="shrink-0 w-12 h-12 flex items-center justify-center border-2 border-slate-900 rounded-full text-slate-900 font-serif font-bold text-2xl mt-1">
+                          {displayIndex}
+                        </div>
+                      ) : (
+                        <div className="shrink-0 w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 mt-1">
+                          <Mic2 size={24} />
+                        </div>
+                      )}
+
+                      <div>
+                        <h1 className="text-3xl md:text-4xl font-serif font-bold leading-tight text-slate-900">
+                          {activeMode === 'moderation' 
+                              ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].title : currentData.modTitle)
+                              : currentData.articles[currentArticleIdx].title
+                          }
+                        </h1>
+                        <p className="text-slate-600 text-lg mt-3 font-serif italic pl-1">
+                          {activeMode === 'moderation' 
+                            ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].authors : currentData.modAuthors)
+                            : currentData.articles[currentArticleIdx].authors
+                          }
+                        </p>
+                      </div>
+                   </div>
+                 )}
                </div>
             </div>
 
             {/* Player Module */}
-            <div className="bg-white border border-slate-200 shadow-sm p-8 relative">
+            <div className="bg-white border border-slate-200 shadow-sm p-6 md:p-8 relative">
                
+               <h4 className="text-sm font-serif font-bold text-slate-900 text-center mb-4 truncate px-4">
+                  {activeMode === 'moderation' 
+                      ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].title : currentData.modTitle)
+                      : currentData.articles[currentArticleIdx].title
+                  }
+               </h4>
+
                {/* Timeline */}
-               <div className="mb-10">
+               <div className="mb-6 md:mb-10">
                   <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
                      <span>{formatTime(activeMode === 'moderation' ? modTime : artTime)}</span>
                      <span>{formatTime(activeMode === 'moderation' ? modDuration : artDuration)}</span>
@@ -535,8 +648,8 @@ const App = () => {
                </div>
 
                {/* Controls */}
-               <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6">
+               <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0">
+                  <div className="flex items-center justify-center gap-6 w-full md:w-auto">
                      <button onClick={handleRewind} className="text-slate-400 hover:text-slate-900 transition-colors">
                         <SkipBack size={24} strokeWidth={1.5} />
                      </button>
@@ -551,7 +664,7 @@ const App = () => {
                      </button>
                   </div>
 
-                  <div className="flex-1 flex flex-col items-end gap-2">
+                  <div className="flex-1 flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
                      {activeMode === 'moderation' && activeMarkerIdx !== -1 && (
                         <>
                            <button 
@@ -567,7 +680,7 @@ const App = () => {
                                  href={currentData.articles[activeMarkerIdx].readUrl} 
                                  target="_blank" 
                                  rel="noopener noreferrer"
-                                 className="flex items-center gap-2 text-slate-500 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
+                                 className="hidden md:flex items-center gap-2 text-slate-500 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
                               >
                                  <span>ARTIKEL LESEN</span>
                                  <ExternalLink size={14} />
@@ -577,7 +690,7 @@ const App = () => {
                      )}
                      
                      {activeMode === 'article' && (
-                        <div className="flex flex-col items-end gap-2">
+                        <div className="flex flex-col items-center md:items-end gap-2">
                            <button 
                               onClick={backToOverview}
                               className="flex items-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-wider hover:text-slate-900 transition-all"
@@ -591,7 +704,7 @@ const App = () => {
                                  href={currentData.articles[currentArticleIdx].readUrl} 
                                  target="_blank" 
                                  rel="noopener noreferrer"
-                                 className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
+                                 className="hidden md:flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-wider hover:text-red-600 transition-colors"
                               >
                                  <span>Artikel lesen</span>
                                  <ExternalLink size={14} />
