@@ -169,25 +169,21 @@ const PLAYLIST_CONTENT = {
 };
 
 const App = () => {
-  // Login State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState(false);
 
-  // App State
   const [activePlaylist, setActivePlaylist] = useState('morgen'); 
   const [activeMode, setActiveMode] = useState('moderation'); 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentArticleIdx, setCurrentArticleIdx] = useState(0);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   
-  // Audio State
   const [modTime, setModTime] = useState(0);
   const [artTime, setArtTime] = useState(0);
   const [modDuration, setModDuration] = useState(0);
   const [artDuration, setArtDuration] = useState(0);
   
-  // File Management State
   const [error, setError] = useState(null);
   const [needsFileLink, setNeedsFileLink] = useState(false);
   const [userFiles, setUserFiles] = useState({});
@@ -198,9 +194,7 @@ const App = () => {
   const currentData = PLAYLIST_CONTENT[activePlaylist];
 
   const getSrc = (defaultName) => {
-    // 1. Wenn Nutzer Datei manuell gewählt hat (Fallback für lokale Tests)
     if (userFiles[defaultName]) return userFiles[defaultName];
-    // 2. Standard: Wir gehen davon aus, dass die Datei im public-Ordner liegt (einfacher String)
     return defaultName;
   };
 
@@ -209,7 +203,6 @@ const App = () => {
     return currentData.articles.findIndex(a => modTime >= a.modStart && modTime <= a.modEnd);
   }, [modTime, currentData]);
 
-  // Handle Login
   const handleLogin = (e) => {
     e.preventDefault();
     if (passwordInput.toLowerCase().trim() === 'spiegel') {
@@ -220,7 +213,6 @@ const App = () => {
     }
   };
 
-  // Reset Player when switching Playlists
   useEffect(() => {
     setIsPlaying(false);
     setCurrentArticleIdx(0);
@@ -311,25 +303,36 @@ const App = () => {
   const handlePrev = () => {
      if (activeMode === 'moderation') {
        const tolerance = 2; 
-       const prevArticle = [...currentData.articles].reverse().find(a => a.modStart < modTime - tolerance);
+       const activeArticle = currentData.articles.find(a => modTime >= a.modStart && modTime <= a.modEnd + 5);
        
-       if (prevArticle && modAudioRef.current) {
-         modAudioRef.current.currentTime = prevArticle.modStart;
-         setIsPlaying(true);
-       } else if (modAudioRef.current) {
-         modAudioRef.current.currentTime = 0;
+       if (activeArticle) {
+           if (modTime > activeArticle.modStart + 3) {
+               if (modAudioRef.current) modAudioRef.current.currentTime = activeArticle.modStart;
+           } else {
+               const currIndex = currentData.articles.indexOf(activeArticle);
+               if (currIndex > 0) {
+                   if (modAudioRef.current) modAudioRef.current.currentTime = currentData.articles[currIndex - 1].modStart;
+               } else {
+                   if (modAudioRef.current) modAudioRef.current.currentTime = 0;
+               }
+           }
+       } else {
+           const prevArticle = [...currentData.articles].reverse().find(a => a.modEnd < modTime);
+           if (prevArticle && modAudioRef.current) {
+                modAudioRef.current.currentTime = prevArticle.modStart;
+           } else if (modAudioRef.current) {
+               modAudioRef.current.currentTime = 0;
+           }
        }
+       setIsPlaying(true);
      } else {
         if (currentArticleIdx > 0) {
             setCurrentArticleIdx(prev => prev - 1);
             setIsPlaying(true);
+        } else if (artAudioRef.current) {
+            artAudioRef.current.currentTime = 0; // Restart track if first one
         }
      }
-  };
-
-  const handleRewind = () => {
-     const ref = activeMode === 'moderation' ? modAudioRef : artAudioRef;
-     if(ref.current) ref.current.currentTime -= 10;
   };
 
   const handleAudioError = (e, fileName) => {
@@ -355,12 +358,10 @@ const App = () => {
     setIsPlaying(false); 
   };
 
-  // Swipe handling
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [touchStartY, setTouchStartY] = useState(null);
   const [touchEndY, setTouchEndY] = useState(null);
-  
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
@@ -399,7 +400,6 @@ const App = () => {
     }
   }
 
-  // --- LOGIN SCREEN RENDER ---
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#F6F6F6] flex flex-col items-center justify-center p-4 font-sans text-slate-900">
@@ -450,7 +450,6 @@ const App = () => {
     );
   }
 
-  // --- MAIN APP RENDER ---
   let displayIndex = null;
   if (activeMode === 'article') {
     displayIndex = currentArticleIdx + 1;
@@ -466,7 +465,6 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#F6F6F6] text-slate-900 font-sans selection:bg-red-100">
-      {/* Top Navigation Bar */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -494,7 +492,6 @@ const App = () => {
                <div className="absolute right-0 top-full mt-0 w-64 bg-white shadow-xl border border-slate-200 rounded-b-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                  <div className="py-2">
                    {Object.values(PLAYLIST_CONTENT).map(pl => {
-                     // We need to render the icon as a component
                      const IconComponent = pl.icon;
                      return (
                        <button
@@ -517,10 +514,8 @@ const App = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
         
-        {/* Fallback File Linker */}
         {needsFileLink && (
           <div className="bg-orange-50 border-l-4 border-orange-500 p-6 shadow-sm">
             <div className="flex items-start gap-4">
@@ -542,7 +537,6 @@ const App = () => {
 
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* LEFT: Active Player */}
           <div className="lg:col-span-7 space-y-8">
             
             <div>
@@ -553,97 +547,76 @@ const App = () => {
                  </span>
                </div>
 
-               {/* Image Display */}
                <div className="relative aspect-[16/9] bg-slate-100 rounded-lg overflow-hidden mb-4 group">
-                 {currentArticleForImage && currentArticleForImage.imageFile ? (
+                 <a 
+                   href={currentArticleForImage && currentArticleForImage.imageFile ? (currentArticleForImage.readUrl || "#") : "#"} 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="block w-full h-full relative"
+                   onTouchStart={onTouchStart}
+                   onTouchMove={onTouchMove}
+                   onTouchEnd={onTouchEnd}
+                 >
+                   {currentArticleForImage && currentArticleForImage.imageFile ? (
+                     <img 
+                       src={getSrc(currentArticleForImage.imageFile)} 
+                       alt={currentArticleForImage.title}
+                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                     />
+                   ) : (
+                     <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">
+                        <Mic2 size={48} />
+                     </div>
+                   )}
+                 </a>
+
+                 {currentArticleForImage && currentArticleForImage.imageFile && (
                    <>
-                     <a 
-                       href={currentArticleForImage.readUrl || "#"} 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="block w-full h-full relative"
-                       onTouchStart={onTouchStart}
-                       onTouchMove={onTouchMove}
-                       onTouchEnd={onTouchEnd}
-                     >
-                       <img 
-                         src={getSrc(currentArticleForImage.imageFile)} 
-                         alt={currentArticleForImage.title}
-                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                       />
-                       
-                       <div className="absolute top-4 left-4 flex items-center justify-center w-12 h-12 border-2 border-white rounded-full text-white font-serif font-bold text-2xl bg-black/30 backdrop-blur-sm z-10">
-                         {displayIndex}
-                       </div>
+                     <div className="absolute top-4 left-4 flex items-center justify-center w-12 h-12 border-2 border-white rounded-full text-white font-serif font-bold text-2xl bg-black/30 backdrop-blur-sm z-10 pointer-events-none">
+                       {displayIndex}
+                     </div>
 
-                       {activeMode === 'moderation' && (
-                         <div 
-                            className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); jumpToArticle(); }}
-                         >
-                            <div className="bg-black/50 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm animate-bounce">
-                                <ChevronDown size={28} />
-                            </div>
-                         </div>
-                       )}
+                     {activeMode === 'moderation' && (
+                       <button 
+                          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-black/50 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm animate-bounce"
+                          onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              jumpToArticle();
+                          }}
+                       >
+                          <ChevronDown size={28} />
+                       </button>
+                     )}
 
-                       {activeMode === 'article' && (
-                         <div 
-                            className="absolute top-4 right-1/2 translate-x-1/2 z-20"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); backToOverview(); }}
-                         >
-                            <div className="bg-black/50 hover:bg-slate-700 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm">
-                                <ChevronUp size={28} />
-                            </div>
-                         </div>
-                       )}
-                     </a>
+                     {activeMode === 'article' && (
+                       <button 
+                          className="absolute top-4 right-1/2 translate-x-1/2 z-20 bg-black/50 hover:bg-slate-700 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm"
+                          onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              backToOverview();
+                          }}
+                       >
+                          <ChevronUp size={28} />
+                       </button>
+                     )}
 
-                     {/* Desktop Arrows */}
                      <div className="hidden md:block absolute top-1/2 left-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                       <button onClick={handlePrev} className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}>
+                       <button onClick={handlePrev} className="p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg">
                          <ChevronLeft size={24} />
                        </button>
                      </div>
                      <div className="hidden md:block absolute top-1/2 right-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                       <button onClick={handleNext} className={`p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg`}>
+                       <button onClick={handleNext} className="p-2 rounded-full bg-white/80 hover:bg-white text-slate-900 transition-colors shadow-lg">
                          <ChevronRight size={24} />
                        </button>
                      </div>
                    </>
-                 ) : (
-                   // Fallback Text View (wenn kein Bild)
-                   <div className="flex gap-4 items-start p-4">
-                      {displayIndex ? (
-                        <div className="shrink-0 w-12 h-12 flex items-center justify-center border-2 border-slate-900 rounded-full text-slate-900 font-serif font-bold text-2xl mt-1">
-                          {displayIndex}
-                        </div>
-                      ) : (
-                        <div className="shrink-0 w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 mt-1">
-                          <Mic2 size={24} />
-                        </div>
-                      )}
-
-                      <div>
-                        <h1 className="text-3xl md:text-4xl font-serif font-bold leading-tight text-slate-900">
-                          {activeMode === 'moderation' 
-                              ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].title : currentData.modTitle)
-                              : currentData.articles[currentArticleIdx].title
-                          }
-                        </h1>
-                        <p className="text-slate-600 text-lg mt-3 font-serif italic pl-1">
-                          {activeMode === 'moderation' 
-                            ? (activeMarkerIdx !== -1 ? currentData.articles[activeMarkerIdx].authors : currentData.modAuthors)
-                            : currentData.articles[currentArticleIdx].authors
-                          }
-                        </p>
-                      </div>
-                   </div>
                  )}
                </div>
             </div>
 
-            {/* Player UI */}
             <div className="bg-white border border-slate-200 shadow-sm p-6 md:p-8 relative">
                <h4 className="text-sm font-serif font-bold text-slate-900 text-center mb-4 truncate px-4">
                   {activeMode === 'moderation' 
@@ -663,6 +636,29 @@ const App = () => {
                      <div className="absolute h-1 bg-red-600 z-10 transition-all duration-300" style={{ width: `${((activeMode === 'moderation' ? modTime : artTime) / (activeMode === 'moderation' ? (modDuration || 1) : (artDuration || 1))) * 100}%` }}>
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-red-600 rounded-full shadow-md"></div>
                      </div>
+                     
+                     {/* Marker Dots */}
+                     {activeMode === 'moderation' && modDuration > 0 && currentData.articles.map((a) => {
+                       const isActive = modTime >= a.modStart && modTime <= a.modEnd;
+                       return (
+                         <div 
+                           key={a.id}
+                           className="absolute top-1/2 -translate-y-1/2 z-20 group/marker"
+                           style={{ left: `${(a.modStart / modDuration) * 100}%` }}
+                         >
+                           {/* The Marker Dot */}
+                           <div className={`rounded-full transition-all duration-300 shadow-sm ${isActive ? 'w-4 h-4 bg-red-600 border-2 border-white shadow-md scale-110' : 'w-2 h-2 bg-slate-400 hover:bg-slate-600 hover:scale-125'}`}></div>
+
+                           {/* Hover Tooltip */}
+                           <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 hidden group-hover/marker:block bg-slate-900 text-white text-[10px] px-2 py-1 whitespace-nowrap z-50 rounded shadow-lg">
+                             <span className="font-bold text-red-400 mr-1">{a.id}.</span>
+                             {a.title.substring(0, 20)}...
+                             <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                           </div>
+                         </div>
+                       );
+                     })}
+
                      <input 
                        type="range"
                        min="0"
@@ -681,7 +677,7 @@ const App = () => {
 
                <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0">
                   <div className="flex items-center justify-center gap-6 w-full md:w-auto">
-                     <button onClick={handleRewind} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipBack size={24} strokeWidth={1.5} /></button>
+                     <button onClick={handlePrev} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipBack size={24} strokeWidth={1.5} /></button>
                      <button onClick={togglePlay} className="w-16 h-16 bg-slate-900 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
                         {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                      </button>
@@ -719,7 +715,6 @@ const App = () => {
             </div>
           </div>
 
-          {/* RIGHT: List */}
           <div className="lg:col-span-5 bg-white border border-slate-200 shadow-sm">
             <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                <h3 className="font-bold text-slate-900 text-sm uppercase tracking-widest flex items-center gap-2"><List size={16} className="text-red-600" /> Inhalt der Playlist</h3>
