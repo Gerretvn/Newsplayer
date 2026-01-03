@@ -16,12 +16,11 @@ import {
   Heart,
   Sun,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Lock
 } from 'lucide-react';
 
 // --- DATEI IMPORT LOGIK ---
-// Versucht, Dateien aus 'src' zu laden. Falls das fehlschlägt (z.B. weil Dateien in 'public' liegen),
-// greift der Fallback auf die Dateinamen-Strings in der Datenstruktur.
 let importedFiles = {};
 try {
   importedFiles = {
@@ -43,7 +42,6 @@ try {
     img6_morgen: require('./Bild Artikel 6.webp'),
   };
 } catch (e) {
-  // Wenn Importe fehlen, nutzen wir Fallbacks
   importedFiles = { logo: "image_2dc4c5.png" };
 }
 
@@ -216,6 +214,12 @@ const PLAYLIST_CONTENT = {
 };
 
 const App = () => {
+  // Login State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [loginError, setLoginError] = useState(false);
+
+  // App State
   const [activePlaylist, setActivePlaylist] = useState('morgen'); 
   const [activeMode, setActiveMode] = useState('moderation'); 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -255,6 +259,18 @@ const App = () => {
     return currentData.articles.findIndex(a => modTime >= a.modStart && modTime <= a.modEnd);
   }, [modTime, currentData]);
 
+  // Handle Login
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Einfacher Passwort-Check (case-insensitive)
+    if (passwordInput.toLowerCase().trim() === 'spiegel') {
+      setIsAuthenticated(true);
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+    }
+  };
+
   // Reset Player when switching Playlists
   useEffect(() => {
     setIsPlaying(false);
@@ -274,6 +290,8 @@ const App = () => {
 
   useEffect(() => {
     const handlePlayback = async () => {
+      if (!isAuthenticated) return; // Kein Playback vor Login
+
       try {
         const activeRef = activeMode === 'moderation' ? modAudioRef.current : artAudioRef.current;
         const inactiveRef = activeMode === 'moderation' ? artAudioRef.current : modAudioRef.current;
@@ -299,7 +317,7 @@ const App = () => {
       }
     };
     handlePlayback();
-  }, [isPlaying, activeMode, currentArticleIdx, userFiles, activePlaylist]);
+  }, [isPlaying, activeMode, currentArticleIdx, userFiles, activePlaylist, isAuthenticated]);
 
   const togglePlay = () => setIsPlaying(!isPlaying);
 
@@ -401,6 +419,65 @@ const App = () => {
     }
   }
 
+  // --- LOGIN SCREEN RENDER ---
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#F6F6F6] flex flex-col items-center justify-center p-4 font-sans text-slate-900">
+        <div className="bg-white p-8 md:p-12 rounded-2xl shadow-xl w-full max-w-sm border border-slate-200">
+          <div className="flex flex-col items-center mb-8">
+            <img 
+               src={getSrc('logo', 'image_2dc4c5.png')} 
+               alt="SPIEGEL" 
+               className="h-10 object-contain mb-6"
+               onError={(e) => e.target.style.display = 'none'}
+            />
+            <span className="text-red-600 font-black text-3xl tracking-tighter mb-1">SPIEGEL</span>
+            <span className="text-slate-400 font-light text-sm tracking-widest uppercase">Audio Prototyp</span>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Zugangscode</label>
+              <div className="relative">
+                <input 
+                  type="password" 
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all font-serif"
+                  placeholder="Passwort eingeben"
+                  autoFocus
+                />
+                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              </div>
+            </div>
+
+            {loginError && (
+              <div className="text-red-600 text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
+                <AlertCircle size={14} />
+                <span>Falsches Passwort. Bitte erneut versuchen.</span>
+              </div>
+            )}
+
+            <button 
+              type="submit"
+              className="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors uppercase tracking-wide text-sm shadow-md"
+            >
+              Anmelden
+            </button>
+          </form>
+          
+          <div className="mt-8 text-center">
+            <p className="text-[10px] text-slate-400">
+              Interner Entwicklungs-Build v1.0<br/>
+              Nur für autorisierte Nutzer.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- MAIN APP RENDER ---
   let displayIndex = null;
   if (activeMode === 'article') {
     displayIndex = currentArticleIdx + 1;
@@ -464,6 +541,7 @@ const App = () => {
         </div>
       </nav>
 
+      {/* ... Rest der App (wie zuvor) ... */}
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
         
         {/* Fallback File Linker */}
