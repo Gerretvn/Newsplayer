@@ -65,7 +65,7 @@ const PLAYLIST_CONTENT = {
     label: "Playlist am Morgen",
     icon: Sun,
     modFile: "Moderation.mp3",
-    modTitle: "Die Lage am Morgen: Das Briefing",
+    modTitle: "Playlist am Morgen",
     modAuthors: "Die wichtigsten Themen des Tages im Überblick.",
     articles: [
       {
@@ -811,7 +811,7 @@ const App = () => {
                  </div>
                </div>
 
-               <div className="relative aspect-[16/9] bg-slate-100 rounded-lg overflow-hidden mb-4 group cursor-pointer">
+               <div className="relative aspect-[4/3] md:aspect-[16/9] bg-slate-100 rounded-lg overflow-hidden mb-4 group cursor-pointer">
                  
                  <div 
                    className="block w-full h-full relative"
@@ -820,6 +820,17 @@ const App = () => {
                    onTouchMove={onTouchMove}
                    onTouchEnd={onTouchEnd}
                  >
+                    {/* NEW: Left Tap Zone for Previous */}
+                   <div 
+                      className="absolute left-0 top-0 bottom-0 w-1/5 z-20"
+                      onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                   />
+                   {/* NEW: Right Tap Zone for Next */}
+                   <div 
+                      className="absolute right-0 top-0 bottom-0 w-1/5 z-20"
+                      onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                   />
+
                    {isIntroMode ? (
                      <div className="w-full h-full bg-slate-900 relative overflow-hidden">
                        <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 opacity-40">
@@ -829,7 +840,7 @@ const App = () => {
                            </div>
                          ))}
                        </div>
-                       <div className="absolute inset-0 flex flex-col items-center justify-center z-10 p-8 text-center">
+                       <div className="absolute inset-0 flex flex-col items-center justify-center z-10 p-4 md:p-8 text-center">
                          {!isPlaying && (
                            <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-white mb-4 shadow-2xl animate-pulse">
                              <Play size={32} fill="currentColor" className="ml-1" />
