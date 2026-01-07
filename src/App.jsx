@@ -908,7 +908,7 @@ const App = () => {
                      </div>
 
                      {activeMode === 'moderation' && (
-                       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+                       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center gap-2">
                           <span className="text-white text-[10px] font-bold uppercase tracking-wider drop-shadow-md text-shadow-sm">Artikel hören</span>
                           <button 
                               className="bg-black/50 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm animate-bounce"
@@ -1035,16 +1035,18 @@ const App = () => {
                </div>
 
                <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0">
-                  <div className="flex items-center justify-center gap-6 w-full md:w-auto">
-                     <button onClick={handlePrev} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipBack size={24} strokeWidth={1.5} /></button>
-                     <button onClick={togglePlay} className="w-16 h-16 bg-slate-900 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
-                        {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
-                     </button>
-                     <button onClick={handleNext} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipForward size={24} strokeWidth={1.5} /></button>
-                     {/* Speed Toggle Button */}
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-2 w-full md:w-auto">
+                     <div className="flex items-center justify-center gap-6">
+                         <button onClick={handlePrev} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipBack size={24} strokeWidth={1.5} /></button>
+                         <button onClick={togglePlay} className="w-16 h-16 bg-slate-900 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                            {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+                         </button>
+                         <button onClick={handleNext} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipForward size={24} strokeWidth={1.5} /></button>
+                     </div>
+                     {/* Speed Toggle Button - Mobile centered below, Desktop beside */}
                      <button 
                        onClick={toggleSpeed}
-                       className="w-10 h-10 flex items-center justify-center text-slate-500 font-bold text-xs hover:bg-slate-100 rounded-full transition-colors ml-2"
+                       className="w-10 h-10 flex items-center justify-center text-slate-500 font-bold text-xs hover:bg-slate-100 rounded-full transition-colors ml-0 md:ml-2"
                        title="Geschwindigkeit ändern"
                      >
                        {playbackSpeed}x
@@ -1054,7 +1056,7 @@ const App = () => {
                   <div className="flex-1 flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
                      {activeMode === 'moderation' && activeMarkerIdx !== -1 && (
                         <>
-                           <button onClick={jumpToArticle} className="flex items-center gap-2 text-red-600 font-bold text-sm uppercase tracking-wider hover:gap-3 transition-all group">
+                           <button onClick={jumpToArticle} className="hidden md:flex items-center gap-2 text-red-600 font-bold text-sm uppercase tracking-wider hover:gap-3 transition-all group">
                               <span>ARTIKEL HÖREN</span> <ArrowRight size={18} />
                            </button>
                         </>
