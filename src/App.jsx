@@ -909,7 +909,7 @@ const App = () => {
 
                      {activeMode === 'moderation' && (
                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
-                          <span className="hidden md:block text-white text-[10px] font-bold uppercase tracking-wider drop-shadow-md text-shadow-sm">Artikel hören</span>
+                          <span className="text-white text-[10px] font-bold uppercase tracking-wider drop-shadow-md text-shadow-sm">Artikel hören</span>
                           <button 
                               className="bg-black/50 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer transition-colors backdrop-blur-sm animate-bounce"
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); jumpToArticle(); }}
