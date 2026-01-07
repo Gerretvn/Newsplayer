@@ -29,7 +29,8 @@ import {
   Lightbulb,
   MessageCircle,
   HelpCircle,
-  FileQuestion
+  FileQuestion,
+  Gauge // Icon für Geschwindigkeit
 } from 'lucide-react';
 
 // --- DATEI IMPORT LOGIK ---
@@ -236,11 +237,14 @@ const App = () => {
   const [activeMode, setActiveMode] = useState('moderation'); 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentArticleIdx, setCurrentArticleIdx] = useState(0);
-  const [contextIdx, setContextIdx] = useState(0); // Hinzugefügt
+  const [contextIdx, setContextIdx] = useState(0); 
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showExamplesModal, setShowExamplesModal] = useState(false);
-  const [expandedContextId, setExpandedContextId] = useState(null); // Hinzugefügt
+  const [expandedContextId, setExpandedContextId] = useState(null); 
+  
+  // Neuer State für Geschwindigkeit
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   
   const [modTime, setModTime] = useState(0);
   const [artTime, setArtTime] = useState(0);
@@ -274,6 +278,24 @@ const App = () => {
     };
   }, [playlistMenuRef]);
 
+  // Effekt zum Setzen der Geschwindigkeit
+  useEffect(() => {
+    const refs = [modAudioRef, artAudioRef, ctxAudioRef];
+    refs.forEach(ref => {
+      if (ref.current) {
+        ref.current.playbackRate = playbackSpeed;
+      }
+    });
+  }, [playbackSpeed, activeMode, isPlaying]);
+
+  const toggleSpeed = () => {
+    setPlaybackSpeed(prev => {
+      if (prev === 1.0) return 1.2;
+      if (prev === 1.2) return 1.5;
+      return 1.0;
+    });
+  };
+
   const getSrc = (defaultName) => {
     if (userFiles[defaultName]) return userFiles[defaultName];
     if (defaultName === "Bild 2 Artikel 2.png" && importedFiles.img2_2_morgen) return importedFiles.img2_2_morgen;
@@ -304,6 +326,7 @@ const App = () => {
     setModTime(0);
     setArtTime(0);
     setCtxTime(0);
+    setPlaybackSpeed(1.0); // Reset speed on playlist change
     if (modAudioRef.current) { modAudioRef.current.currentTime = 0; modAudioRef.current.load(); }
     if (artAudioRef.current) { artAudioRef.current.currentTime = 0; artAudioRef.current.load(); }
     if (ctxAudioRef.current) { ctxAudioRef.current.currentTime = 0; ctxAudioRef.current.load(); }
@@ -326,6 +349,8 @@ const App = () => {
 
         if (isPlaying && activeRef) {
           if (activeRef.readyState === 0) activeRef.load();
+          // Ensure speed is maintained
+          activeRef.playbackRate = playbackSpeed;
           const p = activeRef.play();
           if (p !== undefined) {
             await p;
@@ -343,7 +368,7 @@ const App = () => {
       }
     };
     handlePlayback();
-  }, [isPlaying, activeMode, currentArticleIdx, contextIdx, userFiles, activePlaylist, isAuthenticated]);
+  }, [isPlaying, activeMode, currentArticleIdx, contextIdx, userFiles, activePlaylist, isAuthenticated, playbackSpeed]);
 
   const togglePlay = () => setIsPlaying(!isPlaying);
 
@@ -854,7 +879,7 @@ const App = () => {
                        </div>
                      </div>
                    ) : activeMode === 'context' ? (
-                     <div className="w-full h-full bg-slate-800 flex items-center justify-center p-8 md:p-12 relative overflow-hidden">
+                     <div className="w-full h-full bg-slate-800 flex flex-col items-center justify-center pt-24 pb-8 px-8 md:p-12 relative overflow-hidden">
                        <div className="absolute top-0 right-0 p-4 opacity-10"><FileQuestion size={200} className="text-white" /></div>
                        <div className="relative z-10 text-center">
                          <div className="inline-block bg-red-600 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest mb-4 rounded">Frage {contextIdx + 1} / {currentArticle.context.length}</div>
@@ -1016,6 +1041,14 @@ const App = () => {
                         {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                      </button>
                      <button onClick={handleNext} className="text-slate-400 hover:text-slate-900 transition-colors"><SkipForward size={24} strokeWidth={1.5} /></button>
+                     {/* Speed Toggle Button */}
+                     <button 
+                       onClick={toggleSpeed}
+                       className="w-10 h-10 flex items-center justify-center text-slate-500 font-bold text-xs hover:bg-slate-100 rounded-full transition-colors ml-2"
+                       title="Geschwindigkeit ändern"
+                     >
+                       {playbackSpeed}x
+                     </button>
                   </div>
 
                   <div className="flex-1 flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
